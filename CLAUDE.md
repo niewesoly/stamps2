@@ -39,7 +39,6 @@ src/
     types.test.ts   <- unit tests for CATEGORY_NAMES/ICONS
     slugify.ts      <- Polish diacritics -> URL slug (a->a, l->l, n->n, etc.)
     search.ts       <- Fuse.js buildSearchIndex()
-vitest.config.ts   <- Vitest config (environment: node, alias @/)
   components/
     layout/         <- Header.tsx, Footer.tsx
     ui/             <- shadcn/ui components (button, badge, input, card, separator)
@@ -50,6 +49,7 @@ vitest.config.ts   <- Vitest config (environment: node, alias @/)
   lib/utils.ts      <- cn() utility (clsx + tailwind-merge)
   index.css         <- Tailwind v4 @import + @theme (scout colors) + @layer base
 react-router.config.ts <- ssr: true, prerender() -> all static paths
+vite.config.ts      <- Vite + Vitest config (plugins, @/ alias, test environment)
 ```
 
 ## Key Patterns
