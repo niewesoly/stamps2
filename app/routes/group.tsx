@@ -1,9 +1,9 @@
 import { data } from 'react-router'
 import type { Route } from './+types/group'
-import { getGroupBySlug } from '../../src/data/api'
-import BadgeCard from '../../src/components/BadgeCard'
-import CategoryBadge from '../../src/components/CategoryBadge'
-import StarRating from '../../src/components/StarRating'
+import { getGroupBySlug } from '@/data/api'
+import BadgeCard from '@/components/BadgeCard'
+import CategoryBadge from '@/components/CategoryBadge'
+import StarRating from '@/components/StarRating'
 
 export function meta({ data: loaderData }: Route.MetaArgs) {
   if (!loaderData) return [{ title: 'Nie znaleziono – Sprawności ZHR' }]

@@ -1,10 +1,10 @@
 import { data, Link } from 'react-router'
 import type { Route } from './+types/badge'
-import { getBadgeBySlug, fetchBadgeGroups, findPrerequisiteById } from '../../src/data/api'
-import StarRating from '../../src/components/StarRating'
-import CategoryBadge from '../../src/components/CategoryBadge'
-import { Card, CardContent } from '../../src/components/ui/card'
-import { Badge } from '../../src/components/ui/badge'
+import { getBadgeBySlug, fetchBadgeGroups, findPrerequisiteById } from '@/data/api'
+import StarRating from '@/components/StarRating'
+import CategoryBadge from '@/components/CategoryBadge'
+import { Card, CardContent } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
 
 export function meta({ data: loaderData }: Route.MetaArgs) {
   if (!loaderData) return [{ title: 'Nie znaleziono – Sprawności ZHR' }]

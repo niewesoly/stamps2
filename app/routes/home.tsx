@@ -1,10 +1,10 @@
 import type { Route } from './+types/home'
-import { fetchBadgeGroups } from '../../src/data/api'
-import { CATEGORY_NAMES, CATEGORY_ICONS, type BadgeGroup } from '../../src/data/types'
-import SearchBar from '../../src/components/SearchBar'
-import CategoryBadge from '../../src/components/CategoryBadge'
-import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '../../src/components/ui/card'
-import { Badge } from '../../src/components/ui/badge'
+import { fetchBadgeGroups } from '@/data/api'
+import { CATEGORY_NAMES, CATEGORY_ICONS, type BadgeGroup } from '@/data/types'
+import SearchBar from '@/components/SearchBar'
+import CategoryBadge from '@/components/CategoryBadge'
+import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
 
 export function meta(_args: Route.MetaArgs) {
   return [
