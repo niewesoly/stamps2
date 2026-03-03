@@ -1,3 +1,4 @@
+/// <reference types="vitest" />
 import { defineConfig } from 'vite'
 import { reactRouter } from '@react-router/dev/vite'
 import tailwindcss from '@tailwindcss/vite'
@@ -11,5 +12,8 @@ export default defineConfig({
     alias: {
       '@': new URL('./src', import.meta.url).pathname,
     },
+  },
+  test: {
+    environment: 'node',
   },
 })
