@@ -8,10 +8,10 @@ import { Badge } from '@/components/ui/badge'
 
 export function meta() {
   return [
-    { title: 'Sprawności ZHR – książeczka sprawności harcerskich' },
+    { title: 'Stamps – Odkryj swój szlak' },
     {
       name: 'description',
-      content: 'Przeglądaj wszystkie sprawności ZHR, ucz się wymagań i planuj swój szlak.',
+      content: 'Przeglądaj sprawności, ucz się wymagań i planuj swój harcerski rozwój z aplikacją Stamps.',
     },
   ]
 }
@@ -47,15 +47,15 @@ export default function HomePage({ loaderData }: Route.ComponentProps) {
           }}
         />
 
-        <div className="relative mx-auto max-w-3xl px-6 py-24 text-center animate-fade-in">
-          {/* Ornamental emblem */}
-          <div className="flex justify-center mb-8">
+        <div className="relative mx-auto max-w-3xl px-6 py-12 text-center animate-fade-in">
+          {/* Ornamental emblem (smaller) */}
+          <div className="flex justify-center mb-6">
             <div
-              className="relative flex items-center justify-center w-20 h-20 rounded-2xl bg-forest-800/50 border border-forest-600/30 backdrop-blur-sm"
+              className="relative flex items-center justify-center w-12 h-12 rounded-xl bg-forest-800/50 border border-forest-600/30 backdrop-blur-sm transition-transform hover:scale-105"
             >
               <svg
-                width="36"
-                height="42"
+                width="24"
+                height="28"
                 viewBox="0 0 28 32"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
@@ -70,26 +70,21 @@ export default function HomePage({ loaderData }: Route.ComponentProps) {
             </div>
           </div>
 
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-5 leading-tight tracking-tight">
-            Sprawności ZHR<br />
-            <span className="text-forest-400">Książeczka Wirtualna</span>
+          <h1 className="text-3xl sm:text-4xl font-bold mb-8 leading-tight tracking-tight">
+            Narzędzie puszczańskie
           </h1>
 
-          <p className="text-white/70 text-lg mb-10 max-w-lg mx-auto leading-relaxed">
-            Odkryj wszystkie sprawności ZHR. Przeglądaj wymagania, poznaj szlak od jednej do trzech gwiazdek i planuj swój harcerski rozwój.
-          </p>
-
-          {/* Search */}
-          <div className="max-w-md mx-auto">
+          {/* Search (Emphasized) */}
+          <div className="max-w-xl mx-auto mb-6 transform transition-all relative z-50">
             <SearchBar groups={groups} />
           </div>
 
           {/* Stats row */}
-          <div className="mt-10 flex items-center justify-center gap-8 text-white/50 text-sm font-medium">
+          <div className="flex items-center justify-center gap-6 text-white/50 text-xs font-medium">
             <span>{groups.length} grup</span>
-            <span className="w-px h-4 bg-white/20" />
+            <span className="w-px h-3 bg-white/20" />
             <span>{groups.reduce((s: number, g: BadgeGroup) => s + g.spec.badges.length, 0)} sprawności</span>
-            <span className="w-px h-4 bg-white/20" />
+            <span className="w-px h-3 bg-white/20" />
             <span>{categories.length} kategorie</span>
           </div>
         </div>
@@ -132,43 +127,46 @@ function GroupCard({ group }: { group: BadgeGroup }) {
   return (
     <a
       href={`/${group.slug}`}
-      className="group block rounded-xl focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/60 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+      className="group block rounded-2xl focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/60 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
     >
-      <Card className="h-full transition-all duration-200 hover:-translate-y-1 hover:shadow-lg hover:border-primary/50 bg-card">
-        <CardHeader className="pb-2">
-          <div className="flex items-start justify-between gap-4">
-            <CardTitle className="text-lg leading-snug group-hover:text-primary transition-colors">
-              {group.spec.name}
-            </CardTitle>
-            <Badge variant="secondary" className="shrink-0 text-xs font-medium">
-              {group.spec.badges.length}&nbsp;spraw.
-            </Badge>
-          </div>
-        </CardHeader>
+      <Card className="h-full relative overflow-hidden transition-all duration-500 ease-out hover:-translate-y-1.5 hover:shadow-2xl hover:shadow-primary/15 hover:border-primary/30 bg-card/80 backdrop-blur-xl border border-border/50">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+        <div className="relative z-10">
+          <CardHeader className="pb-3 pt-5">
+            <div className="flex items-start justify-between gap-4">
+              <CardTitle className="text-xl leading-snug group-hover:text-primary transition-colors duration-300">
+                {group.spec.name}
+              </CardTitle>
+              <Badge variant="secondary" className="shrink-0 text-xs font-semibold bg-primary/10 text-primary border-primary/20">
+                {group.spec.badges.length}&nbsp;spraw.
+              </Badge>
+            </div>
+          </CardHeader>
 
-        <CardContent className="pb-4">
-          <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed italic mb-4">
-            „{group.spec.comment}"
-          </p>
+          <CardContent className="pb-5">
+            <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed italic mb-5">
+              „{group.spec.comment}"
+            </p>
 
-          <div className="flex flex-wrap gap-1.5">
-            {group.spec.keywords.slice(0, 4).map(kw => (
-              <span
-                key={kw}
-                className="text-[0.68rem] font-medium bg-muted text-muted-foreground rounded-md px-2 py-0.5"
-              >
-                {kw}
-              </span>
-            ))}
-          </div>
-        </CardContent>
+            <div className="flex flex-wrap gap-2">
+              {group.spec.keywords.slice(0, 4).map(kw => (
+                <span
+                  key={kw}
+                  className="text-[0.7rem] font-medium bg-muted/60 text-muted-foreground rounded-md px-2.5 py-1 backdrop-blur-sm"
+                >
+                  {kw}
+                </span>
+              ))}
+            </div>
+          </CardContent>
 
-        <CardFooter className="pt-0 flex items-center justify-between">
-          <CategoryBadge category={group.category} size="sm" />
-          <span className="text-muted-foreground/50 text-xs font-bold group-hover:text-primary transition-colors translate-x-0 group-hover:translate-x-1 duration-200" aria-hidden>
-            →
-          </span>
-        </CardFooter>
+          <CardFooter className="pt-0 flex items-center justify-between pb-5">
+            <CategoryBadge category={group.category} size="sm" />
+            <span className="text-muted-foreground/40 text-sm font-bold group-hover:text-primary transition-all translate-x-0 group-hover:translate-x-1.5 duration-300" aria-hidden>
+              →
+            </span>
+          </CardFooter>
+        </div>
       </Card>
     </a>
   )

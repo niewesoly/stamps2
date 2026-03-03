@@ -2,8 +2,8 @@ import { Link } from 'react-router'
 
 export default function Header() {
   return (
-    <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b">
-      <div className="mx-auto max-w-6xl px-6 h-[64px] flex items-center justify-between gap-6">
+    <header className="sticky top-0 z-50 bg-background/60 backdrop-blur-2xl border-b border-border/50 shadow-sm transition-all duration-300">
+      <div className="mx-auto max-w-6xl px-4 sm:px-6 h-[72px] flex items-center justify-between gap-3 sm:gap-6">
         {/* Logo */}
         <Link
           to="/"
@@ -32,25 +32,25 @@ export default function Header() {
 
           <div className="leading-none flex flex-col justify-center">
             <div className="font-bold text-foreground tracking-tight text-lg">
-              Sprawności ZHR
+              Stamps
             </div>
-            <div className="text-[0.65rem] font-semibold tracking-widest uppercase text-muted-foreground mt-0.5">
-              Książeczka Harcerska
+            <div className="text-[0.60rem] sm:text-[0.65rem] font-semibold tracking-widest uppercase text-muted-foreground mt-0.5 hidden min-[360px]:block">
+              Odkryj swój szlak
             </div>
           </div>
         </Link>
 
         {/* Right nav */}
-        <nav className="flex items-center gap-2">
+        <nav className="flex items-center gap-1 sm:gap-2">
           <Link
             to="/o-sprawnosciach"
-            className="text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors px-4 py-2 rounded-md text-xs font-semibold tracking-wider uppercase focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+            className="text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors px-3 py-2 sm:px-4 rounded-md text-xs font-semibold tracking-wider uppercase focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary text-center leading-tight sm:leading-normal"
           >
             O sprawnościach
           </Link>
           <Link
             to="/"
-            className="text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors px-4 py-2 rounded-md text-xs font-semibold tracking-wider uppercase focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+            className="hidden sm:inline-flex text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors px-4 py-2 rounded-md text-xs font-semibold tracking-wider uppercase focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
           >
             Strona główna
           </Link>

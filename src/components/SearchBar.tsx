@@ -83,58 +83,87 @@ export default function SearchBar({ groups }: Props) {
   }
 
   return (
-    <div className="relative w-full" onBlur={handleBlur}>
-      <div className="relative">
-        <span aria-hidden="true" className="absolute left-3 top-1/2 -translate-y-1/2 text-white/50 pointer-events-none select-none">
+    <div className={`relative w-full ${open ? 'z-50' : 'z-10'}`} onBlur={handleBlur}>
+      {/* Backdrop when open */}
+      {open && (
+        <div
+          className="fixed inset-0 bg-background/60 backdrop-blur-sm z-40 transition-opacity animate-fade-in"
+          onClick={() => setOpen(false)}
+          aria-hidden="true"
+        />
+      )}
+
+      <div className="relative z-50">
+        <span aria-hidden="true" className="absolute left-5 top-1/2 -translate-y-1/2 text-white/60 pointer-events-none select-none text-xl">
           🔍
         </span>
         <input
           ref={inputRef}
           type="search"
+          role="combobox"
+          aria-expanded={open}
+          aria-controls="search-results"
+          aria-activedescendant={selectedIndex >= 0 ? `search-result-${selectedIndex}` : undefined}
           aria-label="Wyszukaj sprawność po nazwie"
           value={query}
           onChange={handleChange}
           onFocus={() => setOpen(true)}
           onKeyDown={handleKeyDown}
           placeholder="Szukaj sprawności..."
-          className="w-full bg-black/20 text-white placeholder:text-white/70 rounded-xl pl-10 pr-4 py-3 text-base border border-white/20 focus:outline-none focus-visible:ring-4 focus-visible:ring-primary/50 focus-visible:border-transparent backdrop-blur-md transition-all shadow-sm"
+          className="w-full bg-black/30 text-white placeholder:text-white/60 rounded-2xl pl-14 pr-5 py-4 text-lg font-medium border border-white/20 focus:outline-none focus-visible:ring-4 focus-visible:ring-primary focus-visible:border-transparent backdrop-blur-xl transition-all shadow-xl hover:bg-black/40"
         />
       </div>
 
       {open && results.length > 0 && (
-        <div className="absolute top-full mt-2 left-0 right-0 bg-card/95 backdrop-blur-xl text-card-foreground rounded-xl shadow-xl border border-border overflow-hidden z-50 max-h-96 overflow-y-auto animate-in slide-in-from-top-2">
-          {results.map((r, i) => (
-            <a
-              key={i}
-              href={r.type === 'group' ? `/${r.groupSlug}` : `/sprawnosc/${r.badgeSlug}`}
-              className={`flex items-center gap-3 px-4 py-3 transition-colors border-b border-border/50 last:border-0 ${selectedIndex === i ? 'bg-primary/10' : 'hover:bg-muted/80'}`}
-              onMouseEnter={() => setSelectedIndex(i)}
-            >
-              {r.iconUrl && (
-                <div className="w-10 h-10 shrink-0 bg-primary/5 rounded-lg border border-primary/10 flex items-center justify-center p-1">
-                  <img src={r.iconUrl} alt="" className="w-full h-full object-contain" />
-                </div>
-              )}
-              <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-2">
-                  <span className="font-semibold text-foreground text-sm truncate">
-                    {r.type === 'badge' ? r.badgeName : r.groupName}
-                  </span>
-                  {r.stars && <StarRating stars={r.stars} size="sm" />}
-                </div>
-                {r.type === 'badge' && (
-                  <p className="text-xs text-muted-foreground truncate font-medium">{r.groupName}</p>
+        <div
+          id="search-results"
+          role="listbox"
+          className="absolute top-[calc(100%+0.75rem)] -left-4 -right-4 sm:left-0 sm:right-0 bg-card/95 backdrop-blur-2xl text-card-foreground rounded-2xl shadow-2xl border border-border/50 overflow-hidden z-50 max-h-[60vh] overflow-y-auto animate-in fade-in slide-in-from-top-4"
+        >
+          {results.map((r, i) => {
+            const isSelected = selectedIndex === i
+            return (
+              <a
+                key={i}
+                id={`search-result-${i}`}
+                role="option"
+                aria-selected={isSelected}
+                href={r.type === 'group' ? `/${r.groupSlug}` : `/sprawnosc/${r.badgeSlug}`}
+                className={`flex items-center gap-4 px-5 py-4 transition-colors border-b border-border/30 last:border-0 ${isSelected ? 'bg-primary/10' : 'hover:bg-muted/80'
+                  }`}
+                onMouseEnter={() => setSelectedIndex(i)}
+                // Focus styling for keyboard users
+                onFocus={() => setSelectedIndex(i)}
+              >
+                {r.iconUrl && (
+                  <div className={`w-14 h-14 shrink-0 rounded-xl border flex items-center justify-center p-1.5 transition-colors ${isSelected ? 'bg-primary/20 border-primary/30' : 'bg-primary/5 border-primary/10'}`}>
+                    <img src={r.iconUrl} alt="" className="w-full h-full object-contain drop-shadow-sm" />
+                  </div>
                 )}
-              </div>
-              <CategoryBadge category={r.category} size="sm" />
-            </a>
-          ))}
+                <div className="min-w-0 flex-1 flex flex-col items-start gap-1">
+                  <span className="font-extrabold text-foreground text-lg leading-tight">
+                    {r.badgeName || r.groupName}
+                  </span>
+
+                  <span className="text-sm text-muted-foreground font-medium line-clamp-1 mb-1">
+                    {r.type === 'badge' ? r.groupName : 'Grupa sprawności'}
+                  </span>
+
+                  <div className="flex flex-wrap items-center gap-3">
+                    <CategoryBadge category={r.category} size="sm" />
+                    {r.stars && <StarRating stars={r.stars} size="sm" />}
+                  </div>
+                </div>
+              </a>
+            )
+          })}
         </div>
       )}
 
       {open && query.length >= 2 && results.length === 0 && (
-        <div className="absolute top-full mt-2 left-0 right-0 bg-card/95 backdrop-blur-xl text-muted-foreground rounded-xl shadow-xl border border-border px-4 py-8 text-center text-sm z-50 animate-in slide-in-from-top-2">
-          Brak wyników dla „<span className="text-foreground font-semibold">{query}</span>"
+        <div className="absolute top-[calc(100%+0.75rem)] -left-4 -right-4 sm:left-0 sm:right-0 bg-card/95 backdrop-blur-2xl text-muted-foreground rounded-2xl shadow-2xl border border-border px-6 py-10 text-center text-base font-medium z-50 animate-in fade-in slide-in-from-top-4">
+          Nie znaleźliśmy sprawności odpowiadającej haśle „<span className="text-foreground font-bold">{query}</span>”.<br />
+          <span className="text-sm opacity-80 mt-2 block">Spróbuj wpisać krótszy fragment nazwy.</span>
         </div>
       )}
     </div>
