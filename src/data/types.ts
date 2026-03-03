@@ -36,10 +36,3 @@ export const CATEGORY_ICONS: Record<number, string> = {
   4: '📚',
   6: '🎭',
 }
-
-export const CATEGORY_COLORS: Record<number, string> = {
-  1: 'bg-forest-700 text-parchment',
-  2: 'bg-earth-700 text-parchment',
-  3: 'bg-earth-500 text-parchment',
-  4: 'bg-forest-600 text-parchment',
-}
