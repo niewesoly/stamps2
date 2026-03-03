@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import { useNavigate } from 'react-router'
 import Fuse from 'fuse.js'
 import type { BadgeGroup } from '@/data/types'
-import { buildSearchIndex, type SearchResult } from '@/data/search'
+import { buildSearchIndex, type SearchResult, type SearchDocument } from '@/data/search'
 import CategoryBadge from './CategoryBadge'
 import StarRating from './StarRating'
 
@@ -15,7 +15,7 @@ export default function SearchBar({ groups }: Props) {
   const [results, setResults] = useState<SearchResult[]>([])
   const [open, setOpen] = useState(false)
   const [selectedIndex, setSelectedIndex] = useState(-1)
-  const fuseRef = useRef<Fuse<any> | null>(null)
+  const fuseRef = useRef<Fuse<SearchDocument> | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const navigate = useNavigate()
 

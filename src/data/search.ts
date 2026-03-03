@@ -12,7 +12,7 @@ export interface SearchResult {
   category: 1 | 2 | 3 | 4
 }
 
-interface SearchDocument {
+export interface SearchDocument {
   name: string
   keywords: string
   groupName: string
