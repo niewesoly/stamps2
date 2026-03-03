@@ -82,10 +82,24 @@ export function getCategoryIcon(categoryId: number): string {
 }
 
 /**
- * Returns all categories from API.
+ * Returns ordinal for a category from API.
+ * Falls back to static mapping if API not fetched yet.
  */
-export function getCategories(): ApiCategory[] {
-  return _categories || []
+export function getCategoryOrdinal(categoryId: number): number {
+  if (_categories) {
+    const cat = _categories.find(c => c.id === categoryId)
+    if (cat) return cat.ordinal
+  }
+  // Static fallback matches API data
+  const ORDINAL_MAP: Record<number, number> = {
+    1: 1, // Obozownictwo i przyroda
+    2: 3, // Sport, Turystyka i Krajoznawstwo
+    3: 4, // Sztuka i Technika
+    4: 5, // Nauka i kultura
+    5: 6, // Duch i charakter
+    6: 2, // Muzyka i ekspresja
+  }
+  return ORDINAL_MAP[categoryId] || 99
 }
 
 export async function fetchBadgeGroups(): Promise<BadgeGroup[]> {
@@ -153,4 +167,12 @@ export function findPrerequisiteById(groups: BadgeGroup[], id: string): BadgeSpe
     if (found) return found
   }
   return null
+}
+
+/**
+ * Returns unique category IDs from an array, sorted by their ordinal from API.
+ */
+export function getSortedCategoryIds(groupsWithCategories: number[]): number[] {
+  const unique = Array.from(new Set(groupsWithCategories))
+  return unique.sort((a, b) => getCategoryOrdinal(a) - getCategoryOrdinal(b))
 }

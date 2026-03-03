@@ -1,5 +1,5 @@
 import type { Route } from './+types/home'
-import { fetchBadgeGroups, getCategoryName, getCategoryIcon, getCategories } from '@/data/api'
+import { fetchBadgeGroups, getCategoryName, getCategoryIcon, getSortedCategoryIds } from '@/data/api'
 import { type BadgeGroup } from '@/data/types'
 import SearchBar from '@/components/SearchBar'
 import CategoryBadge from '@/components/CategoryBadge'
@@ -30,11 +30,9 @@ export default function HomePage({ loaderData }: Route.ComponentProps) {
     return acc
   }, {})
 
-  // Get unique categories from actual group data
-  const categories = Object.keys(byCategory)
-    .map(Number)
-    .filter(c => byCategory[c]?.length)
-    .sort((a, b) => a - b)
+  // Get unique categories sorted by their ordinal from API
+  const categoryIds = Object.keys(byCategory).map(Number)
+  const categories = getSortedCategoryIds(categoryIds)
 
   return (
     <div>
