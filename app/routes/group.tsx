@@ -1,6 +1,7 @@
 import { data } from 'react-router'
 import type { Route } from './+types/group'
 import { getGroupBySlug } from '@/data/api'
+import type { BadgeSpec } from '@/data/types'
 import BadgeCard from '@/components/BadgeCard'
 import CategoryBadge from '@/components/CategoryBadge'
 import StarRating from '@/components/StarRating'
@@ -35,11 +36,11 @@ export default function GroupPage({ loaderData }: Route.ComponentProps) {
   const { group } = loaderData
   const { spec } = group
 
-  const badgesByStars = {
-    1: spec.badges.filter((b: any) => b.stars === 1),
-    2: spec.badges.filter((b: any) => b.stars === 2),
-    3: spec.badges.filter((b: any) => b.stars === 3),
-  } as Record<1 | 2 | 3, typeof spec.badges>
+  const badgesByStars: Record<1 | 2 | 3, BadgeSpec[]> = {
+    1: spec.badges.filter(b => b.stars === 1),
+    2: spec.badges.filter(b => b.stars === 2),
+    3: spec.badges.filter(b => b.stars === 3),
+  }
 
   return (
     <div className="mx-auto max-w-4xl px-6 py-10 animate-fade-in">
@@ -109,7 +110,7 @@ export default function GroupPage({ loaderData }: Route.ComponentProps) {
             </div>
             <div className="h-px bg-border mb-6" />
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 stagger">
-              {badgesByStars[stars].map((badge: any) => (
+              {badgesByStars[stars].map((badge) => (
                 <BadgeCard key={badge.id} badge={badge} group={group} />
               ))}
             </div>
