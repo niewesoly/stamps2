@@ -115,17 +115,24 @@ export async function fetchBadgeGroups(): Promise<BadgeGroup[]> {
   _cache = data.badges
     .sort((a, b) => a.ordinal - b.ordinal || a.category - b.category)
     .map(group => {
-      const badges: BadgeSpec[] = group.spec.badges.map(badge => ({
-        id: badge.id,
-        name: badge.name,
-        slug: slugify(badge.name),
-        stars: badge.stars as 1 | 2 | 3,
-        requirements: badge.requirements,
-        basedOn: badge.basedOn,
-        iconUrl: group.spec.badgeIcons[badge.id]
-          ? `${ICON_BASE}${group.spec.badgeIcons[badge.id]}`
-          : null,
-      }))
+      const badges: BadgeSpec[] = group.spec.badges.map(badge => {
+        // Unique slug: {name}-{id} to handle duplicate names (e.g., "Strzelec" 2★ and 3★)
+        const nameSlug = slugify(badge.name)
+        const shortId = badge.id.split('-')[0] // e.g., "3e7e8570" from "3e7e8570-f7d3-..."
+        const slug = `${nameSlug}-${shortId}`
+
+        return {
+          id: badge.id,
+          name: badge.name,
+          slug,
+          stars: badge.stars as 1 | 2 | 3,
+          requirements: badge.requirements,
+          basedOn: badge.basedOn,
+          iconUrl: group.spec.badgeIcons[badge.id]
+            ? `${ICON_BASE}${group.spec.badgeIcons[badge.id]}`
+            : null,
+        }
+      })
 
       return {
         id: group.id,
