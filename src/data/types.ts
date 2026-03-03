@@ -22,17 +22,17 @@ export interface BadgeGroup {
 }
 
 export const CATEGORY_NAMES: Record<number, string> = {
-  1: 'Puszcza i przyroda',
-  2: 'Sport',
-  3: 'Umiejętności',
-  4: 'Kultura i wiedza',
+  1: 'Obozownictwo i przyroda',
+  2: 'Sport, turystyka i krajoznawstwo',
+  3: 'Sztuka i technika',
+  4: 'Nauka i kultura',
   6: 'Duch i charakter',
 }
 
 export const CATEGORY_ICONS: Record<number, string> = {
-  1: '🌲',
-  2: '🏹',
-  3: '🔧',
+  1: '⛺',
+  2: '⛰️',
+  3: '🎨',
   4: '📚',
-  6: '🎭',
+  6: '⚜️',
 }
