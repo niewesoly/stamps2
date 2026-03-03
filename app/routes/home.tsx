@@ -1,4 +1,4 @@
-// import type { Route } from './+types/home'
+import type { Route } from './+types/home'
 import { fetchBadgeGroups } from '../../src/data/api'
 import { CATEGORY_NAMES, CATEGORY_ICONS, type BadgeGroup } from '../../src/data/types'
 import SearchBar from '../../src/components/SearchBar'
@@ -30,7 +30,7 @@ export default function HomePage({ loaderData }: Route.ComponentProps) {
     return acc
   }, {})
 
-  const categories = ([1, 2, 3, 4] as const).filter(c => byCategory[c]?.length)
+  const categories = ([1, 2, 3, 4, 6] as const).filter(c => byCategory[c]?.length)
 
   return (
     <div>
@@ -88,7 +88,7 @@ export default function HomePage({ loaderData }: Route.ComponentProps) {
             <span className="w-px h-4 bg-white/20" />
             <span>{groups.reduce((s: number, g: BadgeGroup) => s + g.spec.badges.length, 0)} sprawności</span>
             <span className="w-px h-4 bg-white/20" />
-            <span>4 kategorie</span>
+            <span>{categories.length} kategorie</span>
           </div>
         </div>
       </section>

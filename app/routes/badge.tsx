@@ -1,6 +1,6 @@
 import { data, Link } from 'react-router'
 import type { Route } from './+types/badge'
-import { getBadgeBySlug } from '../../src/data/api'
+import { getBadgeBySlug, fetchBadgeGroups, findPrerequisiteById } from '../../src/data/api'
 import StarRating from '../../src/components/StarRating'
 import CategoryBadge from '../../src/components/CategoryBadge'
 import { Card, CardContent } from '../../src/components/ui/card'
@@ -19,9 +19,10 @@ export async function loader({ params }: Route.LoaderArgs) {
   if (!result) throw data(null, { status: 404 })
 
   const { badge, group } = result
+  const allGroups = await fetchBadgeGroups()
   const prerequisite =
     badge.basedOn.length > 0
-      ? (group.spec.badges.find((b: { id: string }) => b.id === badge.basedOn[0]) ?? null)
+      ? findPrerequisiteById(allGroups, badge.basedOn[0])
       : null
 
   return { badge, group, prerequisite }

@@ -39,7 +39,7 @@ export async function fetchBadgeGroups(): Promise<BadgeGroup[]> {
   const data = (await res.json()) as ApiResponse
 
   _cache = data.badges
-    .sort((a, b) => b.ordinal - a.ordinal || a.category - b.category)
+    .sort((a, b) => a.ordinal - b.ordinal || a.category - b.category)
     .map(group => {
       const badges: BadgeSpec[] = group.spec.badges.map(badge => ({
         id: badge.id,
@@ -56,7 +56,7 @@ export async function fetchBadgeGroups(): Promise<BadgeGroup[]> {
       return {
         id: group.id,
         ordinal: group.ordinal,
-        category: group.category as 1 | 2 | 3 | 4,
+        category: group.category as 1 | 2 | 3 | 4 | 6,
         slug: slugify(group.spec.name),
         spec: {
           name: group.spec.name,
@@ -85,4 +85,12 @@ export async function getBadgeBySlug(badgeSlug: string): Promise<{
     if (badge) return { group, badge }
   }
   return undefined
+}
+
+export function findPrerequisiteById(groups: BadgeGroup[], id: string): BadgeSpec | null {
+  for (const group of groups) {
+    const found = group.spec.badges.find(b => b.id === id)
+    if (found) return found
+  }
+  return null
 }

@@ -9,6 +9,6 @@ export default {
     const badgePaths = groups.flatMap((g: { spec: { badges: Array<{ slug: string }> } }) =>
       g.spec.badges.map((b: { slug: string }) => `/sprawnosc/${b.slug}`)
     )
-    return ['/', ...groupPaths, ...badgePaths]
+    return ['/', '/o-sprawnosciach', ...groupPaths, ...badgePaths]
   },
 } satisfies Config

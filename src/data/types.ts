@@ -11,7 +11,7 @@ export interface BadgeSpec {
 export interface BadgeGroup {
   id: string
   ordinal: number
-  category: 1 | 2 | 3 | 4
+  category: 1 | 2 | 3 | 4 | 6
   slug: string
   spec: {
     name: string
@@ -26,6 +26,7 @@ export const CATEGORY_NAMES: Record<number, string> = {
   2: 'Sport',
   3: 'Umiejętności',
   4: 'Kultura i wiedza',
+  6: 'Duch i charakter',
 }
 
 export const CATEGORY_ICONS: Record<number, string> = {
@@ -33,6 +34,7 @@ export const CATEGORY_ICONS: Record<number, string> = {
   2: '🏹',
   3: '🔧',
   4: '📚',
+  6: '🎭',
 }
 
 export const CATEGORY_COLORS: Record<number, string> = {
