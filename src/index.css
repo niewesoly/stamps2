@@ -1,0 +1,201 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+  --color-forest-950: #052e16;
+  --color-forest-900: #14532d;
+  --color-forest-800: #166534;
+  --color-forest-700: #15803d;
+  --color-forest-600: #16a34a;
+  --color-forest-500: #22c55e;
+  --color-forest-400: #4ade80;
+  --color-forest-300: #86efac;
+
+  /* Fonts */
+  --font-heading: "Inter", system-ui, sans-serif;
+  --font-body: "Inter", system-ui, sans-serif;
+  --font-ui: "Inter", system-ui, sans-serif;
+
+  --radius-card: 0.5rem;
+
+  /* Shadcn color mappings */
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+}
+
+@layer base {
+  :root {
+    --background: 143 15% 98%;
+    --foreground: 143 50% 10%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 143 50% 10%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 143 50% 10%;
+
+    /* Primary: Scout Green */
+    --primary: 143 64% 24%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 143 20% 92%;
+    --secondary-foreground: 143 64% 24%;
+
+    --muted: 143 15% 92%;
+    --muted-foreground: 143 10% 40%;
+
+    --accent: 143 20% 92%;
+    --accent-foreground: 143 64% 24%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 143 15% 88%;
+    --input: 143 15% 88%;
+    --ring: 143 64% 24%;
+
+    --radius: 0.75rem;
+  }
+
+  .dark {
+    --background: 143 20% 8%;
+    --foreground: 143 10% 96%;
+
+    --card: 143 20% 12%;
+    --card-foreground: 143 10% 96%;
+
+    --popover: 143 20% 12%;
+    --popover-foreground: 143 10% 96%;
+
+    /* Primary slightly lighter for dark mode contrast */
+    --primary: 143 50% 40%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 143 20% 16%;
+    --secondary-foreground: 143 10% 96%;
+
+    --muted: 143 20% 16%;
+    --muted-foreground: 143 10% 64%;
+
+    --accent: 143 20% 16%;
+    --accent-foreground: 143 10% 96%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 143 20% 20%;
+    --input: 143 20% 20%;
+    --ring: 143 50% 40%;
+  }
+}
+
+@layer base {
+  * {
+    border-color: hsl(var(--border));
+    outline-color: hsl(var(--ring) / 0.5);
+  }
+
+  body {
+    @apply bg-background text-foreground tracking-normal antialiased;
+    font-family: var(--font-body);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-heading);
+    @apply tracking-tight font-bold;
+  }
+}
+
+/* ── Decorative utilities ── */
+@layer utilities {
+  .bg-scout-pattern {
+    background-image:
+      radial-gradient(at 0% 0%, rgba(22, 101, 52, 0.1) 0px, transparent 50%),
+      radial-gradient(at 100% 0%, rgba(22, 163, 74, 0.06) 0px, transparent 50%);
+  }
+}
+
+/* Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.5s ease-out both;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.4s ease-out both;
+}
+
+/* Staggered children */
+.stagger>*:nth-child(1) {
+  animation-delay: 0.05s;
+}
+
+.stagger>*:nth-child(2) {
+  animation-delay: 0.10s;
+}
+
+.stagger>*:nth-child(3) {
+  animation-delay: 0.15s;
+}
+
+.stagger>*:nth-child(4) {
+  animation-delay: 0.20s;
+}
+
+.stagger>*:nth-child(5) {
+  animation-delay: 0.25s;
+}
+
+.stagger>*:nth-child(6) {
+  animation-delay: 0.30s;
+}
+
+.stagger>*:nth-child(n+7) {
+  animation-delay: 0.35s;
+}
