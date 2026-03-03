@@ -6,7 +6,7 @@ import CategoryBadge from '@/components/CategoryBadge'
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 
-export function meta(_args: Route.MetaArgs) {
+export function meta() {
   return [
     { title: 'Sprawności ZHR – książeczka sprawności harcerskich' },
     {

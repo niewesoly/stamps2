@@ -1,5 +1,4 @@
 import { CATEGORY_NAMES, CATEGORY_ICONS } from '@/data/types'
-import { Badge } from './ui/badge'
 
 interface Props {
   category: 1 | 2 | 3 | 4 | 6

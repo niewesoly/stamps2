@@ -70,7 +70,7 @@ export default function SearchBar({ groups }: Props) {
       setSelectedIndex(prev => (prev > 0 ? prev - 1 : prev))
     } else if (e.key === 'Enter') {
       e.preventDefault()
-      let selected = selectedIndex >= 0 && selectedIndex < results.length
+      const selected = selectedIndex >= 0 && selectedIndex < results.length
         ? results[selectedIndex]
         : (results.length > 0 ? results[0] : null)
 

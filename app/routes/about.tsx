@@ -1,7 +1,6 @@
-import type { Route } from './+types/about'
 import { Badge } from '@/components/ui/badge'
 
-export function meta(_args: Route.MetaArgs) {
+export function meta() {
     return [
         { title: 'O Sprawnościach – Organizacja Harcerzy ZHR' },
         { name: 'description', content: 'Czym jest sprawność harcerska i jak ją zdobywać? Dowiedz się więcej o szlaku od jednej do trzech gwiazdek.' },
