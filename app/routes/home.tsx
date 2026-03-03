@@ -1,6 +1,6 @@
 import type { Route } from './+types/home'
-import { fetchBadgeGroups } from '@/data/api'
-import { CATEGORY_NAMES, CATEGORY_ICONS, type BadgeGroup } from '@/data/types'
+import { fetchBadgeGroups, getCategoryName, getCategoryIcon, getCategories } from '@/data/api'
+import { type BadgeGroup } from '@/data/types'
 import SearchBar from '@/components/SearchBar'
 import CategoryBadge from '@/components/CategoryBadge'
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card'
@@ -30,7 +30,11 @@ export default function HomePage({ loaderData }: Route.ComponentProps) {
     return acc
   }, {})
 
-  const categories = ([1, 2, 3, 4, 6] as const).filter(c => byCategory[c]?.length)
+  // Get unique categories from actual group data
+  const categories = Object.keys(byCategory)
+    .map(Number)
+    .filter(c => byCategory[c]?.length)
+    .sort((a, b) => a - b)
 
   return (
     <div>
@@ -103,8 +107,8 @@ export default function HomePage({ loaderData }: Route.ComponentProps) {
           {/* Section header */}
           <div className="flex items-center gap-4 mb-8">
             <h2 className="text-2xl font-bold text-foreground flex items-center gap-3">
-              <span className="text-2xl bg-muted p-2 rounded-xl text-primary leading-none">{CATEGORY_ICONS[cat]}</span>
-              {CATEGORY_NAMES[cat]}
+              <span className="text-2xl bg-muted p-2 rounded-xl text-primary leading-none">{getCategoryIcon(cat)}</span>
+              {getCategoryName(cat)}
             </h2>
             <div className="flex-1 h-px bg-border" />
           </div>

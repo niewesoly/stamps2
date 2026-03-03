@@ -6,6 +6,13 @@ const ICON_BASE = 'https://stamps.zhr.pl/img/form/'
 
 interface ApiResponse {
   badges: ApiGroup[]
+  categories: ApiCategory[]
+}
+
+interface ApiCategory {
+  id: number
+  name: string
+  ordinal: number
 }
 
 interface ApiGroup {
@@ -30,6 +37,56 @@ interface ApiBadge {
 }
 
 let _cache: BadgeGroup[] | null = null
+let _categories: ApiCategory[] | null = null
+
+/**
+ * Static fallback category names (matches API data).
+ * Used before API is fetched and as fallback.
+ */
+const CATEGORY_NAMES: Record<number, string> = {
+  1: 'Obozownictwo i przyroda',
+  2: 'Sport, Turystyka i Krajoznawstwo',
+  3: 'Sztuka i Technika',
+  4: 'Nauka i kultura',
+  5: 'Duch i charakter',
+  6: 'Muzyka i ekspresja',
+}
+
+/**
+ * Returns category name from API by category ID.
+ * Falls back to static mapping if API not fetched yet.
+ */
+export function getCategoryName(categoryId: number): string {
+  if (_categories) {
+    const cat = _categories.find(c => c.id === categoryId)
+    if (cat) return cat.name
+  }
+  return CATEGORY_NAMES[categoryId] || `Kategoria ${categoryId}`
+}
+
+/**
+ * Returns emoji icon for category based on API mapping.
+ * Uses local mapping since API doesn't provide icons.
+ */
+export function getCategoryIcon(categoryId: number): string {
+  const ICON_MAP: Record<number, string> = {
+    1: '⛺', // Obozownictwo i przyroda
+    2: '⛰️', // Sport, Turystyka i Krajoznawstwo
+    3: '🎨', // Sztuka i Technika
+    4: '📚', // Nauka i kultura
+    5: '⚜️', // Duch i charakter (lilija)
+    6: '🎭', // Muzyka i ekspresja
+    7: '📋', // Próby
+  }
+  return ICON_MAP[categoryId] || '📌'
+}
+
+/**
+ * Returns all categories from API.
+ */
+export function getCategories(): ApiCategory[] {
+  return _categories || []
+}
 
 export async function fetchBadgeGroups(): Promise<BadgeGroup[]> {
   if (_cache) return _cache
@@ -37,6 +94,9 @@ export async function fetchBadgeGroups(): Promise<BadgeGroup[]> {
   const res = await fetch(API_URL)
   if (!res.ok) throw new Error(`API error: ${res.status}`)
   const data = (await res.json()) as ApiResponse
+
+  // Cache categories for lookup
+  _categories = data.categories
 
   _cache = data.badges
     .sort((a, b) => a.ordinal - b.ordinal || a.category - b.category)
@@ -56,7 +116,7 @@ export async function fetchBadgeGroups(): Promise<BadgeGroup[]> {
       return {
         id: group.id,
         ordinal: group.ordinal,
-        category: group.category as 1 | 2 | 3 | 4 | 6,
+        category: group.category as 1 | 2 | 3 | 4 | 5 | 6,
         slug: slugify(group.spec.name),
         spec: {
           name: group.spec.name,

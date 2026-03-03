@@ -1,14 +1,24 @@
 import { describe, it, expect } from 'vitest'
-import { CATEGORY_NAMES, CATEGORY_ICONS } from '@/data/types'
+import { getCategoryName, getCategoryIcon } from '@/data/api'
 
-// CategoryBadge uses these constants internally.
-// We test that all valid category values (including 6) have entries.
+// CategoryBadge uses these helpers to render category name and icon.
+// We test that all valid category values have proper values.
 describe('CategoryBadge category support', () => {
-  it('CATEGORY_NAMES has entry for every category accepted by CategoryBadge props', () => {
-    const validCategories: Array<1 | 2 | 3 | 4 | 6> = [1, 2, 3, 4, 6]
+  it('getCategoryName returns a name for every valid category', () => {
+    const validCategories = [1, 2, 3, 4, 5, 6]
     validCategories.forEach(c => {
-      expect(CATEGORY_NAMES[c]).toBeDefined()
-      expect(CATEGORY_ICONS[c]).toBeDefined()
+      const name = getCategoryName(c)
+      expect(name).toBeDefined()
+      expect(name.length).toBeGreaterThan(0)
+    })
+  })
+
+  it('getCategoryIcon returns an icon for every valid category', () => {
+    const validCategories = [1, 2, 3, 4, 5, 6]
+    validCategories.forEach(c => {
+      const icon = getCategoryIcon(c)
+      expect(icon).toBeDefined()
+      expect(icon.length).toBeGreaterThan(0)
     })
   })
 })

@@ -1,38 +1,44 @@
 import { describe, it, expect } from 'vitest'
-import { CATEGORY_NAMES, CATEGORY_ICONS } from './types'
+import { getCategoryName, getCategoryIcon } from '@/data/api'
 
-describe('CATEGORY_NAMES', () => {
-  it('category 1 → Obozownictwo i przyroda', () => {
-    expect(CATEGORY_NAMES[1]).toBe('Obozownictwo i przyroda')
+describe('getCategoryName', () => {
+  it('returns name for category 1 (Obozownictwo i przyroda)', () => {
+    expect(getCategoryName(1)).toBe('Obozownictwo i przyroda')
   })
-  it('category 2 → Sport, turystyka i krajoznawstwo', () => {
-    expect(CATEGORY_NAMES[2]).toBe('Sport, turystyka i krajoznawstwo')
+  it('returns name for category 2 (Sport, Turystyka i Krajoznawstwo)', () => {
+    expect(getCategoryName(2)).toBe('Sport, Turystyka i Krajoznawstwo')
   })
-  it('category 3 → Sztuka i technika', () => {
-    expect(CATEGORY_NAMES[3]).toBe('Sztuka i technika')
+  it('returns name for category 3 (Sztuka i Technika)', () => {
+    expect(getCategoryName(3)).toBe('Sztuka i Technika')
   })
-  it('category 4 → Nauka i kultura', () => {
-    expect(CATEGORY_NAMES[4]).toBe('Nauka i kultura')
+  it('returns name for category 4 (Nauka i kultura)', () => {
+    expect(getCategoryName(4)).toBe('Nauka i kultura')
   })
-  it('category 6 → Duch i charakter', () => {
-    expect(CATEGORY_NAMES[6]).toBe('Duch i charakter')
+  it('returns name for category 5 (Duch i charakter)', () => {
+    expect(getCategoryName(5)).toBe('Duch i charakter')
+  })
+  it('returns name for category 6 (Muzyka i ekspresja)', () => {
+    expect(getCategoryName(6)).toBe('Muzyka i ekspresja')
   })
 })
 
-describe('CATEGORY_ICONS', () => {
-  it('category 1 icon → ⛺', () => {
-    expect(CATEGORY_ICONS[1]).toBe('⛺')
+describe('getCategoryIcon', () => {
+  it('returns icon for category 1', () => {
+    expect(getCategoryIcon(1)).toBe('⛺')
   })
-  it('category 2 icon → ⛰️', () => {
-    expect(CATEGORY_ICONS[2]).toBe('⛰️')
+  it('returns icon for category 2', () => {
+    expect(getCategoryIcon(2)).toBe('⛰️')
   })
-  it('category 3 icon → 🎨', () => {
-    expect(CATEGORY_ICONS[3]).toBe('🎨')
+  it('returns icon for category 3', () => {
+    expect(getCategoryIcon(3)).toBe('🎨')
   })
-  it('category 4 icon → 📚 (unchanged)', () => {
-    expect(CATEGORY_ICONS[4]).toBe('📚')
+  it('returns icon for category 4', () => {
+    expect(getCategoryIcon(4)).toBe('📚')
   })
-  it('category 6 icon → ⚜️', () => {
-    expect(CATEGORY_ICONS[6]).toBe('⚜️')
+  it('returns icon for category 5 (Duch)', () => {
+    expect(getCategoryIcon(5)).toBe('⚜️')
+  })
+  it('returns icon for category 6 (Muzyka)', () => {
+    expect(getCategoryIcon(6)).toBe('🎭')
   })
 })
