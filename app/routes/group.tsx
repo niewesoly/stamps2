@@ -26,12 +26,6 @@ const STAR_LABELS: Record<1 | 2 | 3, string> = {
   3: 'Trzy gwiazdki',
 }
 
-const STAR_SUBLABELS: Record<1 | 2 | 3, string> = {
-  1: 'Poziom podstawowy',
-  2: 'Poziom średni',
-  3: 'Poziom zaawansowany',
-}
-
 export default function GroupPage({ loaderData }: Route.ComponentProps) {
   const { group } = loaderData
   const { spec } = group
@@ -43,79 +37,57 @@ export default function GroupPage({ loaderData }: Route.ComponentProps) {
   }
 
   return (
-    <div className="mx-auto max-w-4xl px-6 py-10 animate-fade-in">
-
-      {/* Breadcrumb */}
-      <nav className="text-sm text-muted-foreground mb-8 flex items-center gap-2 flex-wrap font-medium">
-        <a href="/" className="hover:text-primary transition-colors py-2 px-1 -mx-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-md">
-          Strona główna
-        </a>
-        <span className="text-muted-foreground/50" aria-hidden="true">›</span>
-        <span className="text-foreground">{spec.name}</span>
-      </nav>
-
-      {/* Group header */}
-      <header className="mb-10">
-        <div className="flex items-start gap-4 mb-4 flex-wrap">
-          <h1 className="text-3xl sm:text-4xl font-bold text-foreground leading-tight tracking-tight">
-            {spec.name}
-          </h1>
-          <div className="mt-1">
-            <CategoryBadge category={group.category} />
-          </div>
-        </div>
-
-        {/* Decorative rule */}
-        <div className="h-px bg-border mb-6" />
-
-        <blockquote className="text-muted-foreground italic leading-relaxed pl-4 border-l-4 border-primary/30 text-lg">
-          {spec.comment}
-        </blockquote>
-
-        {/* Keywords */}
-        <div className="mt-6 flex flex-wrap gap-2">
-          {spec.keywords.map((kw: string) => (
-            <span
-              key={kw}
-              className="text-xs font-semibold bg-muted text-muted-foreground rounded-md px-2.5 py-1 tracking-wide"
-            >
-              {kw}
-            </span>
-          ))}
+    <div className="mx-auto max-w-6xl px-4 sm:px-6 py-6 animate-fade-in">
+      {/* Compact header - badges are the star */}
+      <header className="mb-6 sticky top-0 z-40 bg-background/80 backdrop-blur-lg -mx-4 sm:-mx-6 px-4 sm:px-6 py-3 border-b border-border/50">
+        <div className="flex items-center gap-3 flex-wrap">
+          <nav className="text-xs text-muted-foreground font-medium">
+            <a href="/" className="hover:text-primary transition-colors">Start</a>
+            <span className="mx-1.5 text-muted-foreground/40">/</span>
+            <span className="text-foreground">{spec.name}</span>
+          </nav>
+          <div className="h-4 w-px bg-border mx-1" />
+          <CategoryBadge category={group.category} size="sm" />
+          <span className="text-xs text-muted-foreground font-medium ml-auto">
+            {spec.badges.length} sprawności
+          </span>
         </div>
       </header>
 
-      {/* Badges grouped by star level */}
+      {/* Badges grouped by star level - visual but compact */}
       {([1, 2, 3] as const).map((stars, i) =>
         badgesByStars[stars].length > 0 ? (
           <section
             key={stars}
-            className="mb-10 animate-fade-in-up"
-            style={{ animationDelay: `${i * 0.1}s` }}
+            className="mb-8 animate-fade-in-up"
+            style={{ animationDelay: `${i * 0.05}s` }}
           >
-            {/* Level header */}
-            <div className="flex items-center gap-3 mb-4">
-              <StarRating stars={stars} size="lg" />
-              <div>
-                <span className="text-foreground font-bold text-lg tracking-tight">
-                  {STAR_LABELS[stars]}
-                </span>
-                <span className="ml-2 text-muted-foreground text-sm font-medium">
-                  · {STAR_SUBLABELS[stars]}
-                </span>
-              </div>
-              <span className="ml-auto text-sm font-bold bg-muted text-muted-foreground px-2.5 py-0.5 rounded-full">
+            {/* Minimal section header */}
+            <div className="flex items-center gap-2 mb-3">
+              <StarRating stars={stars} size="md" />
+              <span className="text-sm font-bold text-foreground">
+                {STAR_LABELS[stars]}
+              </span>
+              <span className="text-xs font-semibold bg-muted text-muted-foreground px-2 py-0.5 rounded-full">
                 {badgesByStars[stars].length}
               </span>
             </div>
-            <div className="h-px bg-border mb-6" />
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 stagger">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
               {badgesByStars[stars].map((badge) => (
                 <BadgeCard key={badge.id} badge={badge} group={group} />
               ))}
             </div>
           </section>
         ) : null
+      )}
+
+      {/* Info footer */}
+      {spec.comment && (
+        <footer className="mt-10 pt-6 border-t border-border">
+          <blockquote className="text-sm text-muted-foreground italic leading-relaxed">
+            {spec.comment}
+          </blockquote>
+        </footer>
       )}
     </div>
   )
