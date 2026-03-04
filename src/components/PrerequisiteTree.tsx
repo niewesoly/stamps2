@@ -9,7 +9,7 @@ interface PrerequisiteTreeProps {
 }
 
 export function PrerequisiteTree({ layout }: PrerequisiteTreeProps) {
-  const { viewBoxWidth, viewBoxHeight, centerOffset, contentWidth } = useMemo(() => {
+  const { viewBoxWidth, viewBoxHeight, centerOffset, contentWidth, padding } = useMemo(() => {
     const padding = 60;
     const viewBoxWidth = layout.width + padding * 2;
     const viewBoxHeight = layout.height + padding * 2;
@@ -19,7 +19,7 @@ export function PrerequisiteTree({ layout }: PrerequisiteTreeProps) {
     const contentWidth = maxX - minX;
     const centerOffset = (minX + maxX) / 2;
 
-    return { viewBoxWidth, viewBoxHeight, centerOffset, contentWidth };
+    return { viewBoxWidth, viewBoxHeight, centerOffset, contentWidth, padding };
   }, [layout]);
 
   return (

@@ -41,7 +41,7 @@ export function SearchResultItem({
     >
       {result.iconUrl && (
         <div className={`
-          ${variant === 'compact' ? 'w-9 h-9 rounded-lg' : 'w-12 h-12 rounded-xl'}
+          ${variant === 'compact' ? 'w-9 h-9 rounded-full' : 'w-12 h-12 rounded-full'}
           shrink-0 border flex items-center justify-center p-1.5 transition-colors
           ${isSelected
             ? variant === 'compact' ? 'bg-primary/20 border-primary/30' : 'bg-primary/10 border-primary/20'
@@ -52,14 +52,12 @@ export function SearchResultItem({
         </div>
       )}
       <div className="min-w-0 flex-1">
-        <div className={`font-bold text-foreground leading-tight ${
-          variant === 'compact' ? 'text-sm' : 'text-base'
-        }`}>
+        <div className={`font-bold text-foreground leading-tight ${variant === 'compact' ? 'text-sm' : 'text-base'
+          }`}>
           {result.badgeName || result.groupName}
         </div>
-        <div className={`text-sm mt-0.5 ${
-          variant === 'compact' ? 'text-[11px] text-muted-foreground truncate' : 'text-muted-foreground'
-        }`}>
+        <div className={`text-sm mt-0.5 ${variant === 'compact' ? 'text-[11px] text-muted-foreground truncate' : 'text-muted-foreground'
+          }`}>
           {result.type === 'badge' ? result.groupName : 'Grupa sprawności'}
         </div>
         {variant === 'expanded' && (

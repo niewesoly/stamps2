@@ -140,7 +140,7 @@ export default function SearchBar({ groups }: Props) {
                 onFocus={() => setSelectedIndex(i)}
               >
                 {r.iconUrl && (
-                  <div className={`w-14 h-14 shrink-0 rounded-xl border flex items-center justify-center p-1.5 transition-colors ${isSelected ? 'bg-primary/20 border-primary/30' : 'bg-primary/5 border-primary/10'}`}>
+                  <div className={`w-14 h-14 shrink-0 rounded-full border flex items-center justify-center p-1.5 transition-colors ${isSelected ? 'bg-primary/20 border-primary/30' : 'bg-primary/5 border-primary/10'}`}>
                     <img src={r.iconUrl} alt="" className="w-full h-full object-contain drop-shadow-sm" />
                   </div>
                 )}

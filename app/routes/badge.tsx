@@ -101,7 +101,7 @@ export default function BadgePage({ loaderData }: Route.ComponentProps) {
           <div className="flex flex-col sm:flex-row items-start gap-6">
             {/* Icon */}
             <div className="shrink-0 mx-auto sm:mx-0">
-              <div className="flex items-center justify-center w-24 h-24 sm:w-28 sm:h-28 rounded-2xl bg-primary/10 border border-primary/20">
+              <div className="flex items-center justify-center w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-primary/10 border border-primary/20">
                 {badge.iconUrl ? (
                   <img
                     src={badge.iconUrl}
@@ -153,7 +153,7 @@ export default function BadgePage({ loaderData }: Route.ComponentProps) {
             className="text-foreground hover:text-primary font-medium flex items-center gap-2 transition-colors w-fit p-1 min-h-[44px] rounded-lg focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/60"
           >
             {prerequisite.iconUrl && (
-              <img src={prerequisite.iconUrl} alt="" className="w-5 h-5 object-contain" />
+              <img src={prerequisite.iconUrl} alt="" className="w-6 h-6 object-contain rounded-full bg-orange-100/50 dark:bg-orange-900/50 p-0.5 border border-orange-200/50 dark:border-orange-800/50" />
             )}
             <span className="font-semibold px-1">{prerequisite.name}</span>
             <StarRating stars={prerequisite.stars} size="sm" />
