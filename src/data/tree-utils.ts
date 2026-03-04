@@ -4,6 +4,7 @@ import { type TreeNode } from '@/components/BadgeTree/types'
 /**
  * Build a tree structure from flat badge list based on basedOn relationships.
  * Each badge appears only once in the tree, even if it has multiple parents.
+ * Self-references in basedOn are ignored to prevent cycles.
  */
 export function buildBadgeTree(badges: BadgeSpec[]): TreeNode[] {
   const childrenMap = new Map<string, TreeNode[]>()
@@ -12,10 +13,13 @@ export function buildBadgeTree(badges: BadgeSpec[]): TreeNode[] {
   badges.forEach(b => childrenMap.set(b.id, []))
 
   badges.forEach(badge => {
-    if (badge.basedOn.length === 0) {
+    // Filter out self-references to prevent cycles
+    const validParents = badge.basedOn.filter(id => id !== badge.id)
+
+    if (validParents.length === 0) {
       roots.push({ badge, children: childrenMap.get(badge.id)! })
     } else {
-      badge.basedOn.forEach(parentId => {
+      validParents.forEach(parentId => {
         const parentChildren = childrenMap.get(parentId)
         if (parentChildren) {
           parentChildren.push({ badge, children: childrenMap.get(badge.id)! })

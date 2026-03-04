@@ -59,8 +59,8 @@ export function buildPrerequisiteTree(
     };
     node.ancestor = node; // Self-reference for tree algorithm
 
-    // Build children from basedOn (prerequisites)
-    const prerequisites = badge.basedOn || [];
+    // Build children from basedOn (prerequisites), filtering out self-references
+    const prerequisites = (badge.basedOn || []).filter(id => id !== badge.id);
     for (let i = 0; i < prerequisites.length; i++) {
       const reqId = prerequisites[i];
       const childBadge = badgeMap.get(reqId);

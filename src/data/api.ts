@@ -150,14 +150,25 @@ export async function fetchBadgeGroups(): Promise<BadgeGroup[]> {
               : null,
           }
         })
+        // Smarter formatting: only lowercase if the entire string is uppercase (or mostly uppercase)
+        // This preserves intentional capitalization like "Ratownik Wodny WOPR"
+        let formattedGroupName = group.spec.name;
+        // If the name is fully uppercase (with min length 3 to exclude short acronyms)
+        if (formattedGroupName === formattedGroupName.toUpperCase() && formattedGroupName.length > 2) {
+          // Capitalize first letter, lowercase the rest.
+          formattedGroupName = formattedGroupName.charAt(0) + formattedGroupName.slice(1).toLowerCase();
+        } else {
+          // Just ensure the first letter is always capitalized
+          formattedGroupName = formattedGroupName.charAt(0).toUpperCase() + formattedGroupName.slice(1);
+        }
 
         return {
           id: group.id,
           ordinal: group.ordinal,
           category: group.category as 1 | 2 | 3 | 4 | 5 | 6,
-          slug: slugify(group.spec.name),
+          slug: slugify(formattedGroupName),
           spec: {
-            name: group.spec.name,
+            name: formattedGroupName,
             comment: group.spec.comment,
             keywords: group.spec.keywords,
             badges,
