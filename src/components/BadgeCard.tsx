@@ -22,6 +22,7 @@ export default function BadgeCard({ badge, group }: Props) {
                 alt={badge.name}
                 className="w-full h-full object-contain"
                 loading="lazy"
+                decoding="async"
               />
             ) : (
               <svg width="32" height="38" viewBox="0 0 28 32" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-primary/60 w-8 h-8 sm:w-10 sm:h-10" aria-hidden="true">

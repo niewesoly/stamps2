@@ -107,6 +107,8 @@ export default function BadgePage({ loaderData }: Route.ComponentProps) {
                     src={badge.iconUrl}
                     alt={badge.name}
                     className="w-16 h-16 sm:w-20 sm:h-20 object-contain drop-shadow-sm"
+                    loading="lazy"
+                    decoding="async"
                   />
                 ) : (
                   <svg width="40" height="46" viewBox="0 0 28 32" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-primary/60" aria-hidden="true">
@@ -153,7 +155,7 @@ export default function BadgePage({ loaderData }: Route.ComponentProps) {
             className="text-foreground hover:text-primary font-medium flex items-center gap-2 transition-colors w-fit p-1 min-h-[44px] rounded-lg focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/60"
           >
             {prerequisite.iconUrl && (
-              <img src={prerequisite.iconUrl} alt="" className="w-6 h-6 object-contain rounded-full bg-orange-100/50 dark:bg-orange-900/50 p-0.5 border border-orange-200/50 dark:border-orange-800/50" />
+              <img src={prerequisite.iconUrl} alt="" className="w-6 h-6 object-contain rounded-full bg-orange-100/50 dark:bg-orange-900/50 p-0.5 border border-orange-200/50 dark:border-orange-800/50" loading="lazy" decoding="async" />
             )}
             <span className="font-semibold px-1">{prerequisite.name}</span>
             <StarRating stars={prerequisite.stars} size="sm" />

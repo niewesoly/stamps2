@@ -5,6 +5,11 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme {
+  /* Font z swap - tekst widoczny natychmiast */
+  --font-heading: "Inter", system-ui, -apple-system, sans-serif;
+  --font-body: "Inter", system-ui, -apple-system, sans-serif;
+  --font-ui: "Inter", system-ui, -apple-system, sans-serif;
+
   --color-forest-950: #052e16;
   --color-forest-900: #14532d;
   --color-forest-800: #166534;
@@ -13,11 +18,6 @@
   --color-forest-500: #22c55e;
   --color-forest-400: #4ade80;
   --color-forest-300: #86efac;
-
-  /* Fonts */
-  --font-heading: "Inter", system-ui, sans-serif;
-  --font-body: "Inter", system-ui, sans-serif;
-  --font-ui: "Inter", system-ui, sans-serif;
 
   --radius-card: 0.5rem;
 

@@ -2,11 +2,13 @@ import type { Route } from './+types/home'
 import { fetchBadgeGroups, getCategoryName, getCategoryIcon, getSortedCategoryIds } from '@/data/api'
 import { type BadgeGroup } from '@/data/types'
 import { buildBadgeTree } from '@/data/tree-utils'
-import SearchBar from '@/components/SearchBar'
 import { BadgeTree } from '@/components/BadgeTree'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { useMemo } from 'react'
+import { useMemo, lazy, Suspense } from 'react'
+
+// Lazy load SearchBar - not critical for FCP/LCP
+const SearchBar = lazy(() => import('@/components/SearchBar'))
 
 export function meta() {
   const title = 'Stamps – Książeczka Sprawności OHy ZHR'
@@ -16,6 +18,8 @@ export function meta() {
   return [
     { title },
     { name: 'description', content: description },
+    // Preload LCP image (hero logo)
+    { rel: 'preload', as: 'image', href: '/stamps-logo.webp', type: 'image/webp' },
     // Open Graph / Facebook
     { property: 'og:type', content: 'website' },
     { property: 'og:title', content: title },
@@ -63,15 +67,25 @@ export default function HomePage({ loaderData }: Route.ComponentProps) {
           <div className="flex justify-center mb-8">
             <div className="relative flex items-center justify-center w-24 h-24 rounded-2xl bg-white/5 border border-white/10 overflow-hidden backdrop-blur-md shadow-2xl transition-transform hover:scale-105 duration-500">
               <img
-                src="/stamps-logo.png"
+                src="/stamps-logo.webp"
                 alt="Stamps Logo"
+                width="96"
+                height="96"
                 className="w-full h-full object-cover scale-[1.3]"
+                decoding="async"
+                fetchPriority="high"
               />
             </div>
           </div>
 
           <div className="hidden sm:block max-w-xl mx-auto mb-6 transform transition-all relative z-50">
-            <SearchBar groups={groups} />
+            <Suspense fallback={
+              <div className="w-full bg-black/30 text-white rounded-2xl px-5 py-4 text-lg font-medium border border-white/20 backdrop-blur-xl shadow-xl animate-pulse">
+                <span className="text-white/40">Ładowanie wyszukiwarki...</span>
+              </div>
+            }>
+              <SearchBar groups={groups} />
+            </Suspense>
           </div>
 
           <div className="flex flex-col items-center justify-center gap-2 text-white/50 text-xs font-medium">
