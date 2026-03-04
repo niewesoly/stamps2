@@ -1,4 +1,3 @@
-import { useLocation } from 'react-router'
 import { Search } from 'lucide-react'
 import type { BadgeGroup } from '@/data/types'
 import HeaderLogo from './HeaderLogo'
@@ -11,8 +10,6 @@ interface TopBarProps {
 }
 
 export default function TopBar({ groups, onSearchClick }: TopBarProps) {
-  const location = useLocation()
-
   return (
     <header className="sticky top-0 z-50 bg-background/60 backdrop-blur-2xl border-b border-border/30 shadow-[0_1px_3px_rgba(0,0,0,0.04)] transition-all duration-300">
       <div className="mx-auto max-w-6xl px-3 sm:px-6 h-12 sm:h-14 flex items-center justify-between gap-3">
@@ -23,7 +20,7 @@ export default function TopBar({ groups, onSearchClick }: TopBarProps) {
           <div className="relative max-w-xs flex-1">
             <CompactSearch groups={groups} />
           </div>
-          <DesktopNav location={location} />
+          <DesktopNav />
         </div>
 
         {/* Mobile: search icon in top bar */}
