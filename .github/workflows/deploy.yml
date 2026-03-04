@@ -30,6 +30,6 @@ jobs:
           REMOTE_HOST: ${{ secrets.SSH_HOST }}
           REMOTE_USER: ${{ secrets.SSH_USERNAME }}
           REMOTE_PORT: ${{ secrets.SSH_PORT }}
-          SOURCE: dist/
+          SOURCE: build/client/
           TARGET: ${{ secrets.DEPLOY_PATH }}
           EXCLUDE: /.git/, /node_modules/
