@@ -25,7 +25,7 @@ export function BadgeNode({ position, nodeSize, interactive = true }: BadgeNodeP
         href={`/sprawnosc/${badge.slug}`}
         {...commonProps}
       >
-        <BadgeIcon badge={badge} nodeSize={nodeSize} interactive />
+        <BadgeIcon badge={badge} interactive />
         <BadgeTooltip badge={badge} />
       </a>
     )
@@ -33,13 +33,13 @@ export function BadgeNode({ position, nodeSize, interactive = true }: BadgeNodeP
 
   return (
     <div {...commonProps}>
-      <BadgeIcon badge={badge} nodeSize={nodeSize} interactive={false} />
+      <BadgeIcon badge={badge} interactive={false} />
       <BadgeTooltip badge={badge} />
     </div>
   )
 }
 
-function BadgeIcon({ badge, nodeSize, interactive }: { badge: NodePosition['badge']; nodeSize: number; interactive: boolean }) {
+function BadgeIcon({ badge, interactive }: { badge: NodePosition['badge']; interactive: boolean }) {
   return (
     <div className={`w-full h-full flex items-center justify-center p-0.5 transition-transform duration-300 ${interactive ? 'group-hover/badge:scale-110' : ''} bg-card rounded-full shadow-sm ${interactive ? 'ring-2 ring-transparent group-hover/badge:ring-primary/20 hover:shadow-primary/20 hover:shadow-lg' : ''} relative z-10`}>
       {badge.iconUrl ? (
