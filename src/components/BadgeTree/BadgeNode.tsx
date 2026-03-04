@@ -37,7 +37,7 @@ export function BadgeNode({ position, nodeSize }: BadgeNodeProps) {
       </div>
       {/* Tooltip - high z-index to always appear on top */}
       <span
-        className="absolute -bottom-7 left-1/2 -translate-x-1/2 opacity-0 group-hover/badge:opacity-100 transition-opacity bg-foreground text-background text-[10px] font-bold px-1.5 py-1 rounded whitespace-nowrap shadow-xl z-50 pointer-events-none text-center max-w-[120px]"
+        className="absolute -bottom-7 left-1/2 -translate-x-1/2 opacity-0 group-hover/badge:opacity-100 transition-opacity bg-foreground text-background text-[10px] font-bold px-1.5 py-1 rounded whitespace-nowrap shadow-xl pointer-events-none text-center max-w-[120px]"
         style={{
           zIndex: 100,
         }}

@@ -42,7 +42,7 @@ const LEVEL_LABELS: Record<1 | 2 | 3, string> = {
 }
 
 export default function BadgePage({ loaderData }: Route.ComponentProps) {
-  const { badge, group, prerequisite, treeLayout } = loaderData
+  const { badge, group, prerequisite } = loaderData
 
   return (
     <div className="mx-auto max-w-3xl px-6 py-10 animate-fade-in">

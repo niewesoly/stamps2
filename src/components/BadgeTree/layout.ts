@@ -1,5 +1,4 @@
 import { type TreeNode, type NodePosition, type ConnectionLine, type LayoutResult } from './types'
-import { type BadgeSpec } from '@/data/types'
 import { sortTreeNodeChildren } from '@/data/tree-utils'
 
 interface LayoutConfig {
@@ -10,13 +9,6 @@ interface LayoutConfig {
   containerMaxHeight: number
   tooltipSpace: number
   padding: number
-}
-
-interface PositionedNode {
-  node: TreeNode
-  x: number
-  y: number
-  parents: string[]
 }
 
 const DEFAULT_CONFIG: LayoutConfig = {
@@ -78,31 +70,6 @@ export function getLayoutConfig(badgeCount: number): LayoutConfig {
 }
 
 /**
- * First pass: calculate ideal X position for each node based on its children
- * This ensures parents are centered above their children
- */
-function calculateIdealPositions(
-  node: TreeNode,
-  level: number,
-  config: LayoutConfig,
-  nodeMap: Map<string, { node: TreeNode; level: number; children: TreeNode[] }>
-): number {
-  nodeMap.set(node.badge.id, { node, level, children: node.children })
-
-  if (node.children.length === 0) {
-    return 0 // Leaf node, will be positioned by parent
-  }
-
-  // Recursively calculate for children
-  const childPositions: number[] = []
-  node.children.forEach(child => {
-    calculateIdealPositions(child, level + 1, config, nodeMap)
-  })
-
-  return 0 // Root will be centered
-}
-
-/**
  * Layout tree with parent centering over children
  */
 function layoutTree(
@@ -111,33 +78,7 @@ function layoutTree(
 ): { nodes: NodePosition[]; lines: ConnectionLine[] } {
   const nodes: NodePosition[] = []
   const lines: ConnectionLine[] = []
-  const positioned = new Map<string, { x: number; y: number; badge: BadgeSpec }>()
   const visited = new Set<string>()
-
-  // Calculate subtree width for centering
-  function getSubtreeWidth(nodeId: string, localVisited = new Set<string>()): number {
-    if (localVisited.has(nodeId)) return 0
-    localVisited.add(nodeId)
-
-    const data = getNodeData(nodeId)
-    if (!data || data.children.length === 0) return config.nodeSize
-
-    const sorted = sortTreeNodeChildren(data.children)
-    let totalWidth = 0
-    sorted.forEach((child, idx) => {
-      totalWidth += getSubtreeWidth(child.badge.id, new Set(localVisited))
-      if (idx < sorted.length - 1) totalWidth += config.hSpacing
-    })
-
-    return Math.max(config.nodeSize, totalWidth)
-  }
-
-  function getNodeData(nodeId: string): { node: TreeNode; level: number; children: TreeNode[] } | null {
-    for (const [, data] of nodeMap.entries()) {
-      if (data.node.badge.id === nodeId) return data
-    }
-    return null
-  }
 
   // Collect all nodes with their levels
   const nodeMap = new Map<string, { node: TreeNode; level: number; children: TreeNode[] }>()
@@ -358,13 +299,12 @@ function normalizeLayout(
   // Height: account for badge position + full badge size + tooltip space below
   const rawHeight = maxY - minY + config.nodeSize + config.padding * 2 + config.tooltipSpace
 
-  // Width: use actual width for small trees, cap very wide trees
+  // Width: use containerMaxWidth as minimum for small trees
   // Height: always use actual height to avoid clipping badges/tooltips
   const width = rawWidth < config.containerMaxWidth ? config.containerMaxWidth : rawWidth
   const height = rawHeight
 
   // Calculate offset to center the tree within the container
-  // Tree center is at (minX + maxX) / 2, container center is at width / 2
   const treeCenterX = (minX + maxX) / 2
   const containerCenterX = width / 2
   const horizontalOffset = containerCenterX - treeCenterX

@@ -3,9 +3,8 @@ import { fetchBadgeGroups, getCategoryName, getCategoryIcon, getSortedCategoryId
 import { type BadgeGroup } from '@/data/types'
 import { buildBadgeTree } from '@/data/tree-utils'
 import SearchBar from '@/components/SearchBar'
-import CategoryBadge from '@/components/CategoryBadge'
 import { BadgeTree } from '@/components/BadgeTree'
-import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card'
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { useMemo } from 'react'
 
@@ -110,38 +109,40 @@ function GroupCard({ group }: { group: BadgeGroup }) {
   return (
     <a
       href={`/${group.slug}`}
-      className="group block rounded-2xl focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/60 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+      className="group block rounded-2xl focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/60 focus-visible:ring-offset-2 focus-visible:ring-offset-background h-full"
     >
-      <Card className="h-full relative overflow-hidden transition-all duration-500 ease-out hover:-translate-y-1.5 hover:shadow-2xl hover:shadow-primary/15 hover:border-primary/30 bg-card/80 backdrop-blur-xl border border-border/50">
+      <Card className="p-0 gap-0 h-full flex flex-col relative overflow-hidden transition-all duration-500 ease-out hover:-translate-y-1.5 hover:shadow-2xl hover:shadow-primary/15 hover:border-primary/30 bg-card/80 backdrop-blur-xl border border-border/50">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-        <div className="relative z-10">
-          <CardHeader className="pb-3 pt-5">
-            <div className="flex items-start justify-between gap-4">
-              <CardTitle className="text-xl leading-snug group-hover:text-primary transition-colors duration-300">
-                {group.spec.name}
-              </CardTitle>
-              <Badge variant="secondary" className="shrink-0 text-xs font-semibold bg-primary/10 text-primary border-primary/20">
-                {group.spec.badges.length}&nbsp;spraw.
-              </Badge>
-            </div>
+        <div className="relative z-10 flex flex-col h-full flex-1">
+          <CardHeader className="p-4 pb-2 shrink-0">
+            <CardTitle className="text-base leading-snug group-hover:text-primary transition-colors duration-300">
+              {group.spec.name}
+            </CardTitle>
           </CardHeader>
 
-          <CardContent className="pb-5 relative">
-            <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed italic mb-5">
-              "{group.spec.comment}"
-            </p>
+          <CardContent className="p-4 pt-0 pb-4 relative flex flex-col gap-2.5 flex-1">
+            {group.spec.keywords?.length ? (
+              <div className="flex flex-wrap gap-1">
+                {group.spec.keywords.map((kw: string) => (
+                  <Badge key={kw} variant="secondary" className="text-[9px] px-1 py-0 h-4 min-h-0 font-medium bg-muted/60 text-muted-foreground hover:bg-muted/80">
+                    #{kw}
+                  </Badge>
+                ))}
+              </div>
+            ) : null}
 
-            <div className="flex justify-center w-full mt-8 overflow-hidden">
+            <div className="flex justify-center w-full overflow-hidden py-0.5">
               <BadgeTree treeData={treeData} badgeCount={badgeCount} />
             </div>
-          </CardContent>
 
-          <CardFooter className="pt-0 flex items-center justify-between pb-5">
-            <CategoryBadge category={group.category} size="sm" />
-            <span className="text-muted-foreground/40 text-sm font-bold group-hover:text-primary transition-all translate-x-0 group-hover:translate-x-1.5 duration-300" aria-hidden>
-              →
-            </span>
-          </CardFooter>
+            {group.spec.badges.length <= 6 && (
+              <div className="mt-auto pt-1">
+                <p className="text-[10px] font-medium text-muted-foreground group-hover:text-foreground/80 transition-colors leading-tight line-clamp-2">
+                  {group.spec.badges.map((b) => b.name).join(' • ')}
+                </p>
+              </div>
+            )}
+          </CardContent>
         </div>
       </Card>
     </a>
