@@ -60,14 +60,18 @@ export function buildSearchIndex(groups: BadgeGroup[]): Fuse<SearchDocument> {
   return new Fuse(docs, {
     keys: [
       { name: 'name', weight: 2.0 },
-      { name: 'keywords', weight: 1.5 },
-      { name: 'groupName', weight: 1.0 },
-      { name: 'requirements', weight: 0.5 },
+      { name: 'keywords', weight: 2.5 },
+      { name: 'groupName', weight: 0.5 },
+      { name: 'requirements', weight: 0.3 },
     ],
-    // Higher threshold (0.6) allows matches in long keyword lists
-    // Lower values (e.g. 0.35) would filter out badges with many keywords
-    threshold: 0.6,
+    // Threshold 0.7 balances precision vs recall:
+    // - Allows badges with long keyword lists to match
+    // - Still filters out poor matches
+    // Higher than initial 0.35/0.6 due to field normalization effects
+    threshold: 0.7,
     minMatchCharLength: 2,
     includeScore: true,
+    // ignoreFieldNorm ensures long keyword lists don't penalize scores
+    ignoreFieldNorm: true,
   })
 }
