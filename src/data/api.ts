@@ -1,5 +1,6 @@
 import { slugify } from './slugify'
 import type { BadgeGroup, BadgeSpec } from './types'
+import badgesData from './badges-data.json'
 
 const API_URL = 'https://stamps.zhr.pl/api/badges'
 const ICON_BASE = 'https://stamps.zhr.pl/img/form/'
@@ -102,9 +103,56 @@ export function getCategoryOrdinal(categoryId: number): number {
   return ORDINAL_MAP[categoryId] || 99
 }
 
+/**
+ * Process raw API data into BadgeGroup array.
+ */
+function processBadgeData(data: ApiResponse): BadgeGroup[] {
+  return data.badges
+    .sort((a, b) => a.ordinal - b.ordinal || a.category - b.category)
+    .map(group => {
+      const badges: BadgeSpec[] = group.spec.badges.map(badge => {
+        const nameSlug = slugify(badge.name)
+        const shortId = badge.id.split('-')[0]
+        const slug = `${nameSlug}-${shortId}`
+
+        return {
+          id: badge.id,
+          name: badge.name,
+          slug,
+          stars: badge.stars as 1 | 2 | 3,
+          requirements: badge.requirements,
+          basedOn: badge.basedOn,
+          iconUrl: group.spec.badgeIcons[badge.id]
+            ? `${ICON_BASE}${group.spec.badgeIcons[badge.id]}`
+            : null,
+        }
+      })
+      let formattedGroupName = group.spec.name;
+      if (formattedGroupName === formattedGroupName.toUpperCase() && formattedGroupName.length > 2) {
+        formattedGroupName = formattedGroupName.charAt(0) + formattedGroupName.slice(1).toLowerCase();
+      } else {
+        formattedGroupName = formattedGroupName.charAt(0).toUpperCase() + formattedGroupName.slice(1);
+      }
+
+      return {
+        id: group.id,
+        ordinal: group.ordinal,
+        category: group.category as 1 | 2 | 3 | 4 | 5 | 6,
+        slug: slugify(formattedGroupName),
+        spec: {
+          name: formattedGroupName,
+          comment: group.spec.comment,
+          keywords: group.spec.keywords,
+          badges,
+        },
+      } satisfies BadgeGroup
+    })
+}
+
 export async function fetchBadgeGroups(): Promise<BadgeGroup[]> {
   if (_cache) return _cache
 
+  // First try live API (works in dev mode and tests with mocked fetch)
   try {
     const res = await fetch(API_URL)
     if (!res.ok) {
@@ -128,60 +176,30 @@ export async function fetchBadgeGroups(): Promise<BadgeGroup[]> {
 
     // Cache categories for lookup
     _categories = response.categories
-
-    _cache = response.badges
-      .sort((a, b) => a.ordinal - b.ordinal || a.category - b.category)
-      .map(group => {
-        const badges: BadgeSpec[] = group.spec.badges.map(badge => {
-          // Unique slug: {name}-{id} to handle duplicate names (e.g., "Strzelec" 2★ and 3★)
-          const nameSlug = slugify(badge.name)
-          const shortId = badge.id.split('-')[0] // e.g., "3e7e8570" from "3e7e8570-f7d3-..."
-          const slug = `${nameSlug}-${shortId}`
-
-          return {
-            id: badge.id,
-            name: badge.name,
-            slug,
-            stars: badge.stars as 1 | 2 | 3,
-            requirements: badge.requirements,
-            basedOn: badge.basedOn,
-            iconUrl: group.spec.badgeIcons[badge.id]
-              ? `${ICON_BASE}${group.spec.badgeIcons[badge.id]}`
-              : null,
-          }
-        })
-        // Smarter formatting: only lowercase if the entire string is uppercase (or mostly uppercase)
-        // This preserves intentional capitalization like "Ratownik Wodny WOPR"
-        let formattedGroupName = group.spec.name;
-        // If the name is fully uppercase (with min length 3 to exclude short acronyms)
-        if (formattedGroupName === formattedGroupName.toUpperCase() && formattedGroupName.length > 2) {
-          // Capitalize first letter, lowercase the rest.
-          formattedGroupName = formattedGroupName.charAt(0) + formattedGroupName.slice(1).toLowerCase();
-        } else {
-          // Just ensure the first letter is always capitalized
-          formattedGroupName = formattedGroupName.charAt(0).toUpperCase() + formattedGroupName.slice(1);
-        }
-
-        return {
-          id: group.id,
-          ordinal: group.ordinal,
-          category: group.category as 1 | 2 | 3 | 4 | 5 | 6,
-          slug: slugify(formattedGroupName),
-          spec: {
-            name: formattedGroupName,
-            comment: group.spec.comment,
-            keywords: group.spec.keywords,
-            badges,
-          },
-        } satisfies BadgeGroup
-      })
+    _cache = processBadgeData(response)
 
     return _cache
   } catch (error) {
-    // Re-throw with more context
-    const message = error instanceof Error ? error.message : 'Unknown error occurred'
-    throw new Error(`Failed to fetch badge groups: ${message}`)
+    // If fetch fails (e.g., network error, API blocked), fall back to static data
+    console.warn('Failed to fetch from API, using static data:', error instanceof Error ? error.message : error)
   }
+
+  // Fallback to static data (for CI/CD builds without API access)
+  try {
+    const data = badgesData as ApiResponse
+
+    if (data && Array.isArray(data.badges) && Array.isArray(data.categories)) {
+      _categories = data.categories
+      _cache = processBadgeData(data)
+      console.log('Loaded badge data from static JSON')
+      return _cache
+    }
+  } catch (error) {
+    console.warn('Failed to load static data:', error instanceof Error ? error.message : error)
+  }
+
+  // If all else fails, throw an error
+  throw new Error('Failed to fetch badge groups: API and static data unavailable')
 }
 
 export async function getGroupBySlug(slug: string): Promise<BadgeGroup | undefined> {
