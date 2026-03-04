@@ -35,5 +35,5 @@ jobs:
           EXCLUDE: /.git/, /node_modules/
           ARGS: -avzr --delete
           SCRIPT_BEFORE: |
-        whoami
-        ls -al
+            whoami
+            ls -al
