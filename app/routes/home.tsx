@@ -5,10 +5,9 @@ import { buildBadgeTree } from '@/data/tree-utils'
 import { BadgeTree } from '@/components/BadgeTree'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { useMemo, useState, Suspense, useEffect } from 'react'
+import { useMemo, } from 'react'
+import SearchBar from '@/components/SearchBar'
 
-// Note: SearchBar is loaded dynamically on interaction to avoid preloading
-// Header CompactSearch provides search functionality on all pages
 
 export function meta() {
   const title = 'Stamps – Książeczka Sprawności OHy ZHR'
@@ -40,7 +39,6 @@ export async function loader() {
 
 export default function HomePage({ loaderData }: Route.ComponentProps) {
   const { groups } = loaderData
-  const [SearchComponent, setSearchComponent] = useState<React.ComponentType<{ groups: BadgeGroup[] }> | null>(null)
 
   const byCategory = groups.reduce((acc: Record<number, BadgeGroup[]>, g: BadgeGroup) => {
     if (!acc[g.category]) acc[g.category] = []
@@ -51,12 +49,7 @@ export default function HomePage({ loaderData }: Route.ComponentProps) {
   const categoryIds = Object.keys(byCategory).map(Number)
   const categories = getSortedCategoryIds(categoryIds)
 
-  const handleSearchClick = async () => {
-    if (!SearchComponent) {
-      const { default: SearchBar } = await import('@/components/SearchBar')
-      setSearchComponent(() => SearchBar)
-    }
-  }
+
 
   return (
     <div>
@@ -86,31 +79,7 @@ export default function HomePage({ loaderData }: Route.ComponentProps) {
           </div>
 
           <div className="hidden sm:block max-w-xl mx-auto mb-6 transform transition-all relative z-50">
-            {SearchComponent ? (
-              <Suspense fallback={
-                <div className="w-full bg-black/30 text-white rounded-2xl px-5 py-4 text-lg font-medium border border-white/20 backdrop-blur-xl shadow-xl">
-                  <span className="text-white/40">Ładowanie wyszukiwarki...</span>
-                </div>
-              }>
-                <SearchComponent groups={groups} />
-              </Suspense>
-            ) : (
-              <div
-                className="w-full bg-black/30 text-white/60 rounded-2xl px-5 py-4 text-lg font-medium border border-white/20 backdrop-blur-xl shadow-xl cursor-pointer hover:bg-black/40 hover:text-white/80 transition-all"
-                onClick={handleSearchClick}
-                role="button"
-                tabIndex={0}
-                aria-label="Kliknij aby wyszukać sprawności"
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault()
-                    handleSearchClick()
-                  }
-                }}
-              >
-                🔍 Szukaj sprawności...
-              </div>
-            )}
+            <SearchBar groups={groups} />
           </div>
 
           <div className="flex flex-col items-center justify-center gap-2 text-white/50 text-xs font-medium">
