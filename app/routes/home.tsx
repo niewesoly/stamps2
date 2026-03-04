@@ -9,12 +9,22 @@ import { Badge } from '@/components/ui/badge'
 import { useMemo } from 'react'
 
 export function meta() {
+  const title = 'Stamps – Odkryj swój szlak'
+  const description = 'Przeglądaj sprawności, ucz się wymagań i planuj swój harcerski rozwój z aplikacją Stamps.'
+
   return [
-    { title: 'Stamps – Odkryj swój szlak' },
-    {
-      name: 'description',
-      content: 'Przeglądaj sprawności, ucz się wymagań i planuj swój harcerski rozwój z aplikacją Stamps.',
-    },
+    { title },
+    { name: 'description', content: description },
+    // Open Graph / Facebook
+    { property: 'og:type', content: 'website' },
+    { property: 'og:title', content: title },
+    { property: 'og:description', content: description },
+    { property: 'og:image', content: '/og-image.png' },
+    // Twitter
+    { name: 'twitter:card', content: 'summary_large_image' },
+    { name: 'twitter:title', content: title },
+    { name: 'twitter:description', content: description },
+    { name: 'twitter:image', content: '/og-image.png' },
   ]
 }
 

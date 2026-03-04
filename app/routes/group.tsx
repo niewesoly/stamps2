@@ -12,9 +12,23 @@ import { useMemo } from 'react'
 
 export function meta({ data: loaderData }: Route.MetaArgs) {
   if (!loaderData) return [{ title: 'Nie znaleziono – Sprawności ZHR' }]
+
+  const title = `${loaderData.group.spec.name} – Sprawności ZHR`
+  const description = loaderData.group.spec.comment
+
   return [
-    { title: `${loaderData.group.spec.name} – Sprawności ZHR` },
-    { name: 'description', content: loaderData.group.spec.comment },
+    { title },
+    { name: 'description', content: description },
+    // Open Graph / Facebook
+    { property: 'og:type', content: 'website' },
+    { property: 'og:title', content: title },
+    { property: 'og:description', content: description },
+    { property: 'og:image', content: '/og-image.png' },
+    // Twitter
+    { name: 'twitter:card', content: 'summary' },
+    { name: 'twitter:title', content: title },
+    { name: 'twitter:description', content: description },
+    { name: 'twitter:image', content: '/og-image.png' },
   ]
 }
 

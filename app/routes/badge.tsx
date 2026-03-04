@@ -12,9 +12,24 @@ import { BadgeTree } from '@/components/BadgeTree'
 
 export function meta({ data: loaderData }: Route.MetaArgs) {
   if (!loaderData) return [{ title: 'Nie znaleziono – Sprawności ZHR' }]
+
+  const title = `${loaderData.badge.name} – ${loaderData.group.spec.name} – Sprawności ZHR`
+  const description = loaderData.badge.requirements[0] ?? ''
+  const image = loaderData.badge.iconUrl || '/og-image.png'
+
   return [
-    { title: `${loaderData.badge.name} – ${loaderData.group.spec.name} – Sprawności ZHR` },
-    { name: 'description', content: loaderData.badge.requirements[0] ?? '' },
+    { title },
+    { name: 'description', content: description },
+    // Open Graph / Facebook
+    { property: 'og:type', content: 'website' },
+    { property: 'og:title', content: title },
+    { property: 'og:description', content: description },
+    { property: 'og:image', content: image },
+    // Twitter
+    { name: 'twitter:card', content: 'summary' },
+    { name: 'twitter:title', content: title },
+    { name: 'twitter:description', content: description },
+    { name: 'twitter:image', content: image },
   ]
 }
 

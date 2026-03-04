@@ -1,73 +1,130 @@
-# React + TypeScript + Vite
+# Stamps – Odkryj swój szlak
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Aplikacja webowa do przeglądania i wyszukiwania sprawności harcerskich ZHR.
 
-Currently, two official plugins are available:
+## 🚀 Stack technologiczny
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **React 19** + **TypeScript**
+- **React Router v7** (Framework Mode) – routing + SSG
+- **Tailwind CSS v4** – stylowanie
+- **shadcn/ui** – komponenty UI
+- **Fuse.js** – wyszukiwarka fuzzy
+- **Vite 7** – build tool + dev server
+- **Vitest** – testy jednostkowe
 
-## React Compiler
+## 📦 Instalacja
 
-The React Compiler is currently not compatible with SWC. See [this issue](https://github.com/vitejs/vite-plugin-react/issues/428) for tracking the progress.
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 🛠️ Komendy
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+| Komenda | Opis |
+|---------|------|
+| `npm run dev` | Dev server z HMR (http://localhost:5173) |
+| `npm run build` | Build produkcyjny (SSG) → `build/client/` |
+| `npm run preview` | Podgląd builda produkcyjnego |
+| `npm run test` | Uruchomienie testów Vitest |
+| `npm run lint` | ESLint |
+| `npm run typecheck` | Sprawdzenie typów TypeScript |
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## 🏗️ Struktura projektu
+
 ```
+stamps2/
+├── app/                      # Aplikacja React Router
+│   ├── root.tsx              # Główny layout + ErrorBoundary
+│   ├── routes.ts             # Definicje routes
+│   └── routes/
+│       ├── home.tsx          # Strona główna
+│       ├── group.tsx         # Widok grupy sprawności
+│       ├── badge.tsx         # Widok pojedynczej sprawności
+│       └── about.tsx         # Strona informacyjna
+├── src/
+│   ├── components/           # Komponenty React
+│   │   ├── ui/               # shadcn/ui components
+│   │   ├── BadgeTree/        # Drzewo sprawności
+│   │   ├── SearchBar.tsx     # Wyszukiwarka
+│   │   └── ...
+│   ├── data/
+│   │   ├── api.ts            # Fetchowanie danych z API
+│   │   ├── types.ts          # Typy TypeScript
+│   │   ├── search.ts         # Indeks Fuse.js
+│   │   └── tree-utils.ts     # Budowa drzewa
+│   └── index.css             # Style globalne + Tailwind
+├── public/                   # Statyczne pliki
+├── react-router.config.ts    # Konfiguracja React Router
+└── vite.config.ts            # Konfiguracja Vite
+```
+
+## 🔌 API
+
+Aplikacja korzysta z publicznego API ZHR:
+
+- **Endpoint:** `https://stamps.zhr.pl/api/badges`
+- **Dane:** Grupy sprawności, badge, wymagania, ikony
+
+## 🧪 Testy
+
+```bash
+# Uruchom wszystkie testy
+npm run test
+
+# Testy z watch mode
+npm run test -- --watch
+```
+
+Testy pokrywają:
+- Sortowanie grup po ordinal
+- Wyszukiwanie prerequisite cross-group
+- Validację typów kategorii
+
+## 📱 Funkcjonalności
+
+- **Wyszukiwarka** – fuzzy search po nazwach, keywords i wymaganiach
+- **Drzewo wymagań** – wizualizacja powiązań między sprawnościami
+- **Kategorie** – przeglądanie po kategoriach (obozownictwo, sport, sztuka...)
+- **Responsywność** – mobile-first, działa na telefonach i desktopie
+- **SSG** – statyczny build, szybkie ładowanie, brak servera
+
+## 🚀 Deployment
+
+### Build statyczny
+
+```bash
+npm run build
+```
+
+Output: `build/client/` – gotowe do wrzucenia na dowolny hosting statyczny.
+
+### Hostingi
+
+Aplikacja działa na każdym hostingu statycznym:
+
+- **Netlify** – drop `build/client/` lub podłącz repo
+- **Vercel** – automatyczne wykrycie React Router
+- **GitHub Pages** – push do gh-pages branch
+- **Cloudflare Pages** – podłącz repo, build command: `npm run build`
+
+### Przykład: Netlify
+
+1. Podłącz repozytorium GitHub
+2. Build command: `npm run build`
+3. Publish directory: `build/client`
+4. Deploy
+
+## 📊 Jakość kodu
+
+| Metryka | Status |
+|---------|--------|
+| ESLint | ✅ 0 błędów |
+| Testy | ✅ 18 passing |
+| TypeScript | ✅ 0 errors |
+| Bundle size | ~500K (gzipped: ~150K) |
+
+## 📝 Licencja
+
+Dane: [Związek Harcerstwa Rzeczpospolitej](https://stamps.zhr.pl)
+
+Aplikacja: MIT
