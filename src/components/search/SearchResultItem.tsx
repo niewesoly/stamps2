@@ -50,7 +50,7 @@ export function SearchResultItem({
             : variant === 'compact' ? 'bg-primary/5 border-primary/10' : 'bg-primary/5 border-primary/10'
           }
         `}>
-          <img src={result.iconUrl} alt="" className="w-full h-full object-contain" loading="lazy" decoding="async" />
+          <img src={iconUrl} alt="" className="w-full h-full object-contain" loading="lazy" decoding="async" />
         </div>
       )}
       <div className="min-w-0 flex-1">
