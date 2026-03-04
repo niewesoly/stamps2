@@ -9,8 +9,9 @@ export function BadgeNode({ position, nodeSize }: BadgeNodeProps) {
   const { badge, x, y } = position
 
   return (
+    // Wrapper with group context and high z-index for tooltip
     <div
-      className="absolute z-10 group/badge cursor-default"
+      className="absolute group/badge cursor-default"
       style={{
         left: x - nodeSize / 2,
         top: y - nodeSize / 2,
@@ -18,7 +19,8 @@ export function BadgeNode({ position, nodeSize }: BadgeNodeProps) {
         height: nodeSize,
       }}
     >
-      <div className="w-full h-full flex items-center justify-center p-0.5 transition-transform duration-300 group-hover/badge:scale-110 bg-card rounded-full shadow-sm ring-2 ring-transparent group-hover/badge:ring-primary/20 relative z-20">
+      {/* Badge icon */}
+      <div className="w-full h-full flex items-center justify-center p-0.5 transition-transform duration-300 group-hover/badge:scale-110 bg-card rounded-full shadow-sm ring-2 ring-transparent group-hover/badge:ring-primary/20 relative z-10">
         {badge.iconUrl ? (
           <img
             src={badge.iconUrl}
@@ -33,7 +35,13 @@ export function BadgeNode({ position, nodeSize }: BadgeNodeProps) {
           </div>
         )}
       </div>
-      <span className="absolute -bottom-6 left-1/2 -translate-x-1/2 opacity-0 group-hover/badge:opacity-100 transition-opacity bg-foreground text-background text-[8px] font-bold px-1 py-0.5 rounded whitespace-nowrap shadow-xl z-30 pointer-events-none text-center max-w-[100px]">
+      {/* Tooltip - high z-index to always appear on top */}
+      <span
+        className="absolute -bottom-7 left-1/2 -translate-x-1/2 opacity-0 group-hover/badge:opacity-100 transition-opacity bg-foreground text-background text-[10px] font-bold px-1.5 py-1 rounded whitespace-nowrap shadow-xl z-50 pointer-events-none text-center max-w-[120px]"
+        style={{
+          zIndex: 100,
+        }}
+      >
         {badge.name}
       </span>
     </div>

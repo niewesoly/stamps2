@@ -24,8 +24,8 @@ const DEFAULT_CONFIG: LayoutConfig = {
   levelHeight: 70,
   hSpacing: 24,
   containerMaxWidth: 260,
-  containerMaxHeight: 180,
-  tooltipSpace: 16,
+  containerMaxHeight: 280,
+  tooltipSpace: 32,
   padding: 8,
 }
 
@@ -355,22 +355,31 @@ function normalizeLayout(
   const maxY = Math.max(...nodes.map(n => n.y))
 
   const rawWidth = maxX - minX + config.nodeSize + config.padding * 2
+  // Height: account for badge position + full badge size + tooltip space below
   const rawHeight = maxY - minY + config.nodeSize + config.padding * 2 + config.tooltipSpace
 
-  const width = Math.min(rawWidth, config.containerMaxWidth)
-  const height = Math.min(rawHeight, config.containerMaxHeight)
+  // Width: use actual width for small trees, cap very wide trees
+  // Height: always use actual height to avoid clipping badges/tooltips
+  const width = rawWidth < config.containerMaxWidth ? config.containerMaxWidth : rawWidth
+  const height = rawHeight
+
+  // Calculate offset to center the tree within the container
+  // Tree center is at (minX + maxX) / 2, container center is at width / 2
+  const treeCenterX = (minX + maxX) / 2
+  const containerCenterX = width / 2
+  const horizontalOffset = containerCenterX - treeCenterX
 
   const normalizedNodes = nodes.map(n => ({
     ...n,
-    x: n.x - minX + config.nodeSize / 2 + config.padding,
+    x: n.x + horizontalOffset,
     y: n.y - minY + config.nodeSize / 2 + config.padding,
   }))
 
   const normalizedLines = lines.map(l => ({
     ...l,
-    x1: l.x1 - minX + config.nodeSize / 2 + config.padding,
+    x1: l.x1 + horizontalOffset,
     y1: l.y1 - minY + config.nodeSize / 2 + config.padding,
-    x2: l.x2 - minX + config.nodeSize / 2 + config.padding,
+    x2: l.x2 + horizontalOffset,
     y2: l.y2 - minY + config.nodeSize / 2 + config.padding,
   }))
 
