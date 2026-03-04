@@ -1,4 +1,4 @@
-# Stamps – Odkryj swój szlak
+# Stamps – Książeczka Sprawności OHy ZHR
 
 Aplikacja webowa do przeglądania i wyszukiwania sprawności harcerskich ZHR.
 

@@ -9,8 +9,9 @@ import { Badge } from '@/components/ui/badge'
 import { useMemo } from 'react'
 
 export function meta() {
-  const title = 'Stamps – Odkryj swój szlak'
-  const description = 'Przeglądaj sprawności, ucz się wymagań i planuj swój harcerski rozwój z aplikacją Stamps.'
+  const title = 'Stamps – Książeczka Sprawności OHy ZHR'
+  const description =
+    'Stamps to elektroniczna książeczka sprawności Organizacji Harcerzy ZHR. Przeglądaj wymagania na sprawności harcerskie, wyszukuj konkretne zadania i sprawdzaj stopnie trudności w łatwy i nowoczesny sposób.'
 
   return [
     { title },

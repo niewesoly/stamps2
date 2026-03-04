@@ -6,11 +6,13 @@ import {
   ScrollRestoration,
   isRouteErrorResponse,
   useRouteError,
+  useLoaderData,
 } from 'react-router'
 import type { LinksFunction } from 'react-router'
 import '../src/index.css'
 import Header from '../src/components/layout/Header'
 import Footer from '../src/components/layout/Footer'
+import { fetchBadgeGroups } from '../src/data/api'
 
 export const links: LinksFunction = () => [
   { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
@@ -43,11 +45,18 @@ export function Layout({ children }: { children: React.ReactNode }) {
   )
 }
 
+export async function loader() {
+  const groups = await fetchBadgeGroups()
+  return { groups }
+}
+
 export default function App() {
+  const { groups } = useLoaderData<typeof loader>()
+
   return (
     <div className="min-h-screen flex flex-col bg-background text-foreground">
-      <Header />
-      <main className="flex-1">
+      <Header groups={groups} />
+      <main className="flex-1 pb-20 sm:pb-0">
         <Outlet />
       </main>
       <Footer />
