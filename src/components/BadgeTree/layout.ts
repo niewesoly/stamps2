@@ -1,4 +1,5 @@
 import { type TreeNode, type NodePosition, type ConnectionLine, type LayoutResult } from './types'
+import { type BadgeSpec } from '@/data/types'
 import { sortTreeNodeChildren } from '@/data/tree-utils'
 
 interface LayoutConfig {
@@ -11,8 +12,10 @@ interface LayoutConfig {
   padding: number
 }
 
-interface LevelNode {
+interface PositionedNode {
   node: TreeNode
+  x: number
+  y: number
   parents: string[]
 }
 
@@ -75,119 +78,218 @@ export function getLayoutConfig(badgeCount: number): LayoutConfig {
 }
 
 /**
- * Collect all nodes by level using BFS-like traversal
+ * First pass: calculate ideal X position for each node based on its children
+ * This ensures parents are centered above their children
  */
-function collectNodesByLevel(
+function calculateIdealPositions(
+  node: TreeNode,
+  level: number,
+  config: LayoutConfig,
+  nodeMap: Map<string, { node: TreeNode; level: number; children: TreeNode[] }>
+): number {
+  nodeMap.set(node.badge.id, { node, level, children: node.children })
+
+  if (node.children.length === 0) {
+    return 0 // Leaf node, will be positioned by parent
+  }
+
+  // Recursively calculate for children
+  const childPositions: number[] = []
+  node.children.forEach(child => {
+    calculateIdealPositions(child, level + 1, config, nodeMap)
+  })
+
+  return 0 // Root will be centered
+}
+
+/**
+ * Layout tree with parent centering over children
+ */
+function layoutTree(
   treeData: TreeNode[],
   config: LayoutConfig
-): Map<number, LevelNode[]> {
-  const levels = new Map<number, LevelNode[]>()
-  const nodeParents = new Map<string, string[]>()
+): { nodes: NodePosition[]; lines: ConnectionLine[] } {
+  const nodes: NodePosition[] = []
+  const lines: ConnectionLine[] = []
+  const positioned = new Map<string, { x: number; y: number; badge: BadgeSpec }>()
+  const visited = new Set<string>()
 
-  function collect(node: TreeNode, level: number, parentIds: string[]): void {
-    if (!levels.has(level)) levels.set(level, [])
+  // Calculate subtree width for centering
+  function getSubtreeWidth(nodeId: string, localVisited = new Set<string>()): number {
+    if (localVisited.has(nodeId)) return 0
+    localVisited.add(nodeId)
 
-    const existing = levels.get(level)?.find(n => n.node.badge.id === node.badge.id)
-    if (!existing) {
-      levels.get(level)!.push({ node, parents: parentIds })
-      nodeParents.set(node.badge.id, parentIds)
-    } else {
-      const current = nodeParents.get(node.badge.id) || []
-      nodeParents.set(node.badge.id, [...current, ...parentIds])
+    const data = getNodeData(nodeId)
+    if (!data || data.children.length === 0) return config.nodeSize
+
+    const sorted = sortTreeNodeChildren(data.children)
+    let totalWidth = 0
+    sorted.forEach((child, idx) => {
+      totalWidth += getSubtreeWidth(child.badge.id, new Set(localVisited))
+      if (idx < sorted.length - 1) totalWidth += config.hSpacing
+    })
+
+    return Math.max(config.nodeSize, totalWidth)
+  }
+
+  function getNodeData(nodeId: string): { node: TreeNode; level: number; children: TreeNode[] } | null {
+    for (const [, data] of nodeMap.entries()) {
+      if (data.node.badge.id === nodeId) return data
     }
+    return null
+  }
 
-    node.children.forEach(child => {
-      collect(child, level + 1, [node.badge.id])
+  // Collect all nodes with their levels
+  const nodeMap = new Map<string, { node: TreeNode; level: number; children: TreeNode[] }>()
+  const levels = new Map<number, TreeNode[]>()
+
+  function collectNodes(node: TreeNode, level: number): void {
+    if (visited.has(node.badge.id)) {
+      // Node already visited, but might be reached from another parent
+      return
+    }
+    visited.add(node.badge.id)
+
+    nodeMap.set(node.badge.id, { node, level, children: node.children })
+
+    if (!levels.has(level)) levels.set(level, [])
+    levels.get(level)!.push(node)
+
+    node.children.forEach(child => collectNodes(child, level + 1))
+  }
+
+  treeData.forEach(root => {
+    visited.clear()
+    collectNodes(root, 0)
+  })
+
+  // Position nodes level by level, but center parents over children
+  const finalPositions = new Map<string, { x: number; y: number }>()
+  const processed = new Set<string>()
+
+  // Process from bottom level to top
+  const maxLevel = Math.max(...levels.keys())
+
+  for (let level = maxLevel; level >= 0; level--) {
+    const levelNodes = levels.get(level) || []
+
+    // Sort nodes: by stars (ascending), then by number of children (descending - more children = more central)
+    const sorted = [...levelNodes].sort((a, b) => {
+      const starsDiff = a.badge.stars - b.badge.stars
+      if (starsDiff !== 0) return starsDiff
+      // Nodes with more children should be more central
+      return b.children.length - a.children.length
+    })
+
+    // Calculate positions
+    const totalWidth = sorted.reduce((sum, node, idx) => {
+      return sum + config.nodeSize + (idx < sorted.length - 1 ? config.hSpacing : 0)
+    }, 0)
+
+    const startX = -totalWidth / 2 + config.nodeSize / 2
+
+    sorted.forEach((node, index) => {
+      if (processed.has(node.badge.id)) return
+      processed.add(node.badge.id)
+
+      const x = startX + index * (config.nodeSize + config.hSpacing)
+      const y = level * config.levelHeight
+
+      finalPositions.set(node.badge.id, { x, y })
     })
   }
 
-  treeData.forEach(root => collect(root, 0, []))
+  // Now adjust parent positions to be centered over their children
+  const adjustedPositions = new Map<string, { x: number; y: number }>()
 
-  return levels
-}
+  function adjustParentPosition(nodeId: string, localVisited = new Set<string>()): { centerX: number; width: number } {
+    if (localVisited.has(nodeId)) {
+      const pos = adjustedPositions.get(nodeId)
+      return pos ? { centerX: pos.x, width: config.nodeSize } : { centerX: 0, width: 0 }
+    }
+    localVisited.add(nodeId)
 
-/**
- * Calculate subtree width for centering
- */
-function getSubtreeWidth(
-  node: TreeNode,
-  config: LayoutConfig,
-  visited = new Set<string>()
-): number {
-  if (visited.has(node.badge.id)) return 0
-  visited.add(node.badge.id)
+    const data = nodeMap.get(nodeId)
+    if (!data) return { centerX: 0, width: 0 }
 
-  const sorted = sortTreeNodeChildren(node.children)
-  if (sorted.length === 0) return config.nodeSize
-
-  const childrenWidth = sorted.reduce(
-    (sum, child) => sum + getSubtreeWidth(child, config, visited),
-    0
-  )
-  const gaps = (sorted.length - 1) * config.hSpacing
-
-  return Math.max(config.nodeSize, childrenWidth + gaps)
-}
-
-/**
- * Position nodes within a level
- */
-function positionLevelNodes(
-  levelNodes: LevelNode[],
-  level: number,
-  config: LayoutConfig
-): NodePosition[] {
-  const sorted = [...levelNodes].sort((a, b) => {
-    const starsDiff = a.node.badge.stars - b.node.badge.stars
-    if (starsDiff !== 0) return starsDiff
-    return a.parents.length - b.parents.length
-  })
-
-  const totalWidth = sorted.length * config.nodeSize + (sorted.length - 1) * config.hSpacing
-  const startY = level * config.levelHeight
-
-  return sorted.map(({ node }, index) => ({
-    id: node.badge.id,
-    x: index * (config.nodeSize + config.hSpacing),
-    y: startY,
-    badge: node.badge,
-  }))
-}
-
-/**
- * Collect nodes and create connection lines
- */
-function collectNodesAndLines(
-  node: TreeNode,
-  positions: Map<string, NodePosition>,
-  config: LayoutConfig,
-  visited = new Set<string>()
-): { nodes: NodePosition[]; lines: ConnectionLine[] } {
-  if (visited.has(node.badge.id)) return { nodes: [], lines: [] }
-  visited.add(node.badge.id)
-
-  const pos = positions.get(node.badge.id)!
-  const nodes: NodePosition[] = [pos]
-  const lines: ConnectionLine[] = []
-
-  node.children.forEach(child => {
-    const parentPos = positions.get(node.badge.id)!
-    const childPos = positions.get(child.badge.id)!
-
-    if (parentPos && childPos) {
-      lines.push({
-        id: `${parentPos.id}-${childPos.id}`,
-        x1: parentPos.x,
-        y1: parentPos.y + config.nodeSize / 2,
-        x2: childPos.x,
-        y2: childPos.y - config.nodeSize / 2,
-      })
+    if (data.children.length === 0) {
+      const pos = finalPositions.get(nodeId)
+      if (pos) adjustedPositions.set(nodeId, pos)
+      return { centerX: pos?.x || 0, width: config.nodeSize }
     }
 
-    const childResult = collectNodesAndLines(child, positions, config, new Set(visited))
-    nodes.push(...childResult.nodes)
-    lines.push(...childResult.lines)
+    // Calculate children positions first
+    const sorted = sortTreeNodeChildren(data.children)
+    let totalChildrenWidth = 0
+    let leftEdge = 0
+    let rightEdge = 0
+
+    sorted.forEach((child, idx) => {
+      const result = adjustParentPosition(child.badge.id, new Set(localVisited))
+      if (idx === 0) {
+        leftEdge = result.centerX - config.nodeSize / 2
+      }
+      if (idx === sorted.length - 1) {
+        rightEdge = result.centerX + config.nodeSize / 2
+      }
+      totalChildrenWidth += result.width
+      if (idx < sorted.length - 1) {
+        totalChildrenWidth += config.hSpacing
+        rightEdge += config.hSpacing
+      }
+    })
+
+    // Center parent over children
+    const childrenCenterX = (leftEdge + rightEdge) / 2
+    const parentPos = finalPositions.get(nodeId)
+    const newY = parentPos?.y || data.level * config.levelHeight
+
+    adjustedPositions.set(nodeId, { x: childrenCenterX, y: newY })
+
+    const subtreeWidth = Math.max(config.nodeSize, totalChildrenWidth)
+    return { centerX: childrenCenterX, width: subtreeWidth }
+  }
+
+  // Adjust all root positions
+  treeData.forEach(root => {
+    adjustParentPosition(root.badge.id)
   })
+
+  // Build final nodes and lines
+  const addedNodes = new Set<string>()
+
+  function collectNodesAndLines(node: TreeNode, localVisited = new Set<string>()): void {
+    if (localVisited.has(node.badge.id)) return
+    localVisited.add(node.badge.id)
+    if (addedNodes.has(node.badge.id)) return
+    addedNodes.add(node.badge.id)
+
+    const pos = adjustedPositions.get(node.badge.id)
+    if (!pos) return
+
+    nodes.push({
+      id: node.badge.id,
+      x: pos.x,
+      y: pos.y,
+      badge: node.badge,
+    })
+
+    node.children.forEach(child => {
+      const childPos = adjustedPositions.get(child.badge.id)
+      if (childPos) {
+        lines.push({
+          id: `${node.badge.id}-${child.badge.id}`,
+          x1: pos.x,
+          y1: pos.y + config.nodeSize / 2,
+          x2: childPos.x,
+          y2: childPos.y - config.nodeSize / 2,
+        })
+      }
+      collectNodesAndLines(child, new Set(localVisited))
+    })
+  }
+
+  treeData.forEach(root => collectNodesAndLines(root))
 
   return { nodes, lines }
 }
@@ -201,45 +303,38 @@ export function calculateLayout(treeData: TreeNode[], badgeCount: number): Layou
   }
 
   const config = getLayoutConfig(badgeCount)
-  const levels = collectNodesByLevel(treeData, config)
 
-  // Position all nodes by level
-  const positions = new Map<string, NodePosition>()
-  for (const [level, levelNodes] of levels.entries()) {
-    const positioned = positionLevelNodes(levelNodes, level, config)
-    positioned.forEach(pos => positions.set(pos.id, pos))
-  }
+  // Layout all trees
+  const allNodes: NodePosition[] = []
+  const allLines: ConnectionLine[] = []
 
-  // Build nodes and lines arrays
-  const { nodes, lines } = collectNodesAndLines(treeData[0], positions, config)
-
-  // Handle multiple roots
+  // Handle multiple disconnected trees (roots)
   if (treeData.length > 1) {
-    const allNodes: NodePosition[] = []
-    const allLines: ConnectionLine[] = []
-
+    let offsetX = 0
     treeData.forEach((root, index) => {
-      const rootPositions = new Map<string, NodePosition>()
-      const rootLevels = collectNodesByLevel([root], config)
+      const { nodes: treeNodes, lines: treeLines } = layoutTree([root], config)
 
-      for (const [level, levelNodes] of rootLevels.entries()) {
-        const offsetX = index * (config.nodeSize + config.hSpacing)
-        const positioned = positionLevelNodes(levelNodes, level, config).map(pos => ({
-          ...pos,
-          x: pos.x + offsetX,
-        }))
-        positioned.forEach(pos => rootPositions.set(pos.id, pos))
+      if (index > 0) {
+        // Add horizontal gap between trees
+        const prevMaxX = Math.max(...allNodes.map(n => n.x))
+        const currMinX = Math.min(...treeNodes.map(n => n.x))
+        offsetX = prevMaxX - currMinX + config.hSpacing
       }
 
-      const { nodes: rootNodes, lines: rootLines } = collectNodesAndLines(root, rootPositions, config)
-      allNodes.push(...rootNodes)
-      allLines.push(...rootLines)
+      treeNodes.forEach(node => {
+        allNodes.push({ ...node, x: node.x + offsetX })
+      })
+      treeLines.forEach(line => {
+        allLines.push({ ...line, x1: line.x1 + offsetX, x2: line.x2 + offsetX })
+      })
     })
-
-    return normalizeLayout(allNodes, allLines, config)
+  } else {
+    const { nodes, lines } = layoutTree(treeData, config)
+    allNodes.push(...nodes)
+    allLines.push(...lines)
   }
 
-  return normalizeLayout(nodes, lines, config)
+  return normalizeLayout(allNodes, allLines, config)
 }
 
 /**
