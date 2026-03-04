@@ -1,12 +1,10 @@
 import { useRef } from 'react'
 import { Search, X } from 'lucide-react'
 import type { BadgeGroup } from '@/data/types'
-import { useSearch } from './useSearch'
-import { useAutoFocus } from './useAutoFocus'
-import { useFocusTrap } from './useFocusTrap'
-import { SearchResults } from './SearchResults'
-import { SearchNoResults } from './SearchNoResults'
-import { SearchPrompt } from './SearchPrompt'
+import { useSearch } from '@/hooks/useSearch'
+import { useAutoFocus } from '@/hooks/useAutoFocus'
+import { useFocusTrap } from '@/hooks/useFocusTrap'
+import { SearchResults, SearchNoResults, SearchPrompt } from '@/components/search'
 
 interface MobileSearchOverlayProps {
   groups: BadgeGroup[]

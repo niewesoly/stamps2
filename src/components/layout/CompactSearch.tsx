@@ -1,9 +1,8 @@
 import { useRef, useState } from 'react'
 import { Search } from 'lucide-react'
 import type { BadgeGroup } from '@/data/types'
-import { useSearch } from './useSearch'
-import { SearchResults } from './SearchResults'
-import { SearchNoResults } from './SearchNoResults'
+import { useSearch } from '@/hooks/useSearch'
+import { SearchResults, SearchNoResults } from '@/components/search'
 
 interface CompactSearchProps {
   groups: BadgeGroup[]

@@ -1,6 +1,11 @@
 import { useLocation } from 'react-router'
-import { NAV_ITEMS } from './constants'
+import { Home, BookOpen } from 'lucide-react'
 import { NavItem } from './NavItem'
+
+const NAV_ITEMS = [
+  { to: '/', label: 'Sprawności', icon: Home },
+  { to: '/o-sprawnosciach', label: 'O sprawnościach', icon: BookOpen },
+] as const
 
 export default function DesktopNav() {
   const location = useLocation()
