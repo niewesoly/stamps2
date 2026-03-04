@@ -22,8 +22,6 @@ jobs:
 
       - name: Build application
         run: npm run build
-        env:
-          NODE_ENV: production
 
       - name: Deploy via SCP
         uses: easingthemes/ssh-deploy@v4
