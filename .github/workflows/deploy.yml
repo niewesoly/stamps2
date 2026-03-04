@@ -35,5 +35,10 @@ jobs:
           EXCLUDE: /.git/, /node_modules/
           ARGS: -avzr --delete
           SCRIPT_BEFORE: |
-            whoami
-            ls -al
+            echo "=== DEBUG: Checking secrets ==="
+            echo "SSH_PORT: $SSH_PORT"
+            echo "SSH_HOST: $SSH_HOST"
+            echo "SSH_USERNAME: $SSH_USERNAME"
+            echo "REMOTE_PORT will be: ${{ secrets.SSH_PORT || 22 }}"
+            mkdir -p ~/.ssh
+            ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts 2>/dev/null || true
