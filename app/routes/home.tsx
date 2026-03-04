@@ -74,12 +74,15 @@ export default function HomePage({ loaderData }: Route.ComponentProps) {
             <SearchBar groups={groups} />
           </div>
 
-          <div className="flex items-center justify-center gap-6 text-white/50 text-xs font-medium">
-            <span>{groups.length} grup</span>
-            <span className="w-px h-3 bg-white/20" />
-            <span>{groups.reduce((s: number, g: BadgeGroup) => s + g.spec.badges.length, 0)} sprawności</span>
-            <span className="w-px h-3 bg-white/20" />
-            <span>{categories.length} kategorie</span>
+          <div className="flex flex-col items-center justify-center gap-2 text-white/50 text-xs font-medium">
+            <span className="text-white/70 tracking-widest uppercase mb-1 drop-shadow-sm">Odkrywaj nowe ścieżki:</span>
+            <div className="flex items-center gap-6">
+              <span>{groups.length} grup</span>
+              <span className="w-px h-3 bg-white/20" />
+              <span>{groups.reduce((s: number, g: BadgeGroup) => s + g.spec.badges.length, 0)} sprawności</span>
+              <span className="w-px h-3 bg-white/20" />
+              <span>{categories.length} kategorii</span>
+            </div>
           </div>
         </div>
       </section>

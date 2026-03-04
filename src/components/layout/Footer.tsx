@@ -23,15 +23,17 @@ export default function Footer() {
             O sprawnościach
           </Link>
           <div className="hidden sm:block w-px h-4 bg-border"></div>
-          <p className="text-xs text-center font-medium tracking-wide uppercase opacity-80">
-            Dane:{' '}
+          <p className="text-xs text-center font-medium tracking-wide text-muted-foreground/80 leading-relaxed max-w-[280px] sm:max-w-none">
+            Dane z oficjalnego systemu{' '}
             <a
               href="https://stamps.zhr.pl"
-              className="hover:text-primary transition-colors underline underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-sm"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-primary transition-colors underline underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-sm font-semibold"
             >
               stamps.zhr.pl
             </a>
-            {' '}·{' '}Związek Harcerstwa Rzeczpospolitej
+            . Tworzone z pasją przez harcerzy dla harcerzy.
           </p>
         </div>
       </div>

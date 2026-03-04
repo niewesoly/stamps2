@@ -13,10 +13,10 @@ export function SearchNoResults({ query, variant = 'compact' }: SearchNoResultsP
       <div className={baseClasses}>
         <div className="text-4xl mb-3">🔍</div>
         <p className="text-muted-foreground text-sm">
-          Nie znaleźliśmy sprawności pasującej do „<span className="text-foreground font-bold">{query}</span>".
+          Głucha cisza w lesie. Brak wyników dla „<span className="text-foreground font-bold">{query}</span>".
         </p>
         <p className="text-muted-foreground/70 text-xs mt-1">
-          Spróbuj krótszy fragment nazwy.
+          Spróbuj poszukać po innym haśle.
         </p>
       </div>
     )

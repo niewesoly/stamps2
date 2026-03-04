@@ -12,7 +12,7 @@ interface MobileSearchOverlayProps {
 }
 
 export default function MobileSearchOverlay({ groups, onClose }: MobileSearchOverlayProps) {
-  const inputRef = useRef<HTMLInputElement>(null)
+  const inputRef = useRef<HTMLInputElement>(null!)
 
   const {
     query,
@@ -45,7 +45,7 @@ export default function MobileSearchOverlay({ groups, onClose }: MobileSearchOve
             type="search"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Szukaj sprawności..."
+            placeholder="Czego chcesz się dziś nauczyć?..."
             aria-label="Szukaj sprawności"
             className="w-full bg-muted/50 text-foreground placeholder:text-muted-foreground/50 rounded-xl pl-10 pr-4 py-3 text-base font-medium border border-border/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary transition-all"
           />

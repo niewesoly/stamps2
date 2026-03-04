@@ -3,7 +3,7 @@ import { Badge } from '@/components/ui/badge'
 export function meta() {
     return [
         { title: 'O Sprawnościach – Organizacja Harcerzy ZHR' },
-        { name: 'description', content: 'Czym jest sprawność harcerska i jak ją zdobywać? Dowiedz się więcej o szlaku od jednej do trzech gwiazdek.' },
+        { name: 'description', content: 'Dowiedz się, jak wejść na szlak zdobywania sprawności i rozwijać swoje pasje we wspólnocie. Czym jest sprawność harcerska i jak osiągnąć poziom trzech gwiazdek w OHy ZHR.' },
     ]
 }
 

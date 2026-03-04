@@ -70,20 +70,20 @@ export function ErrorBoundary() {
 
   return (
     <div className="min-h-[50vh] flex flex-col items-center justify-center text-center px-4 py-20 bg-background text-foreground">
-      <div className="text-6xl mb-4 text-primary">🌲</div>
+      <div className="text-6xl mb-4 text-primary">🧭</div>
       <h1 className="text-3xl font-bold mb-2">
-        {is404 ? 'Nie znaleziono strony' : 'Coś poszło nie tak'}
+        {is404 ? 'Zeszliśmy ze szlaku...' : 'Coś poszło nie tak na szlaku'}
       </h1>
-      <p className="text-muted-foreground mb-6">
+      <p className="text-muted-foreground mb-6 max-w-md mx-auto">
         {is404
-          ? 'Tej sprawności jeszcze nie ma w naszej książeczce.'
-          : 'Spróbuj ponownie za chwilę.'}
+          ? 'Wygląda na to, że zabłądziliśmy. Tej sprawności lub strony nie ma na naszej mapie.'
+          : 'Awarie się zdarzają, nawet najlepszym gromadom. Spróbuj ponownie za chwilę.'}
       </p>
       <a
         href="/"
         className="inline-flex items-center gap-2 bg-primary hover:bg-primary/90 text-primary-foreground px-5 py-2.5 rounded-lg font-medium transition-colors"
       >
-        ← Wróć na stronę główną
+        ← Wróć na główny szlak
       </a>
     </div>
   )
