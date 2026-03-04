@@ -15,6 +15,7 @@ import Footer from '../src/components/layout/Footer'
 import { fetchBadgeGroups } from '../src/data/api'
 
 export const links: LinksFunction = () => [
+  { rel: 'icon', href: '/favicon.ico' },
   { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
   {
     rel: 'preconnect',
