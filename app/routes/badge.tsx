@@ -1,8 +1,10 @@
 import { data, Link } from 'react-router'
 import type { Route } from './+types/badge'
 import { getBadgeBySlug, fetchBadgeGroups, findPrerequisiteById } from '@/data/api'
+import { buildPrerequisiteTree, calculateTreeLayout } from '@/data/tree'
 import StarRating from '@/components/StarRating'
 import CategoryBadge from '@/components/CategoryBadge'
+import { PrerequisiteTree } from '@/components/PrerequisiteTree'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 
@@ -20,12 +22,17 @@ export async function loader({ params }: Route.LoaderArgs) {
 
   const { badge, group } = result
   const allGroups = await fetchBadgeGroups()
+
+  // Build prerequisite tree (always expanded, vertical progress)
+  const treeRoot = buildPrerequisiteTree(badge, allGroups)
+  const treeLayout = treeRoot ? calculateTreeLayout(treeRoot) : null
+
   const prerequisite =
     badge.basedOn.length > 0
       ? findPrerequisiteById(allGroups, badge.basedOn[0])
       : null
 
-  return { badge, group, prerequisite }
+  return { badge, group, prerequisite, treeLayout }
 }
 
 const LEVEL_LABELS: Record<1 | 2 | 3, string> = {
@@ -35,7 +42,7 @@ const LEVEL_LABELS: Record<1 | 2 | 3, string> = {
 }
 
 export default function BadgePage({ loaderData }: Route.ComponentProps) {
-  const { badge, group, prerequisite } = loaderData
+  const { badge, group, prerequisite, treeLayout } = loaderData
 
   return (
     <div className="mx-auto max-w-3xl px-6 py-10 animate-fade-in">
@@ -141,6 +148,19 @@ export default function BadgePage({ loaderData }: Route.ComponentProps) {
           ))}
         </ol>
       </section>
+
+      {/* Prerequisite Tree */}
+      {loaderData.treeLayout && loaderData.treeLayout.nodes.length > 1 && (
+        <section className="mb-12">
+          <h2 className="text-xl font-bold text-foreground mb-6 flex items-center gap-3">
+            Drzewo wymagań
+            <span className="flex-1 h-px bg-border" />
+          </h2>
+          <div className="overflow-x-auto">
+            <PrerequisiteTree layout={loaderData.treeLayout} />
+          </div>
+        </section>
+      )}
 
       {/* Other badges in group */}
       <section className="pt-8 border-t">
