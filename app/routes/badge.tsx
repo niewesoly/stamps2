@@ -1,4 +1,5 @@
 import { data, Link } from 'react-router'
+import { useMemo } from 'react'
 import type { Route } from './+types/badge'
 import { getBadgeBySlug, fetchBadgeGroups, findPrerequisiteById } from '@/data/api'
 import { buildPrerequisiteTree } from '@/data/tree'
@@ -8,14 +9,6 @@ import CategoryBadge from '@/components/CategoryBadge'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { BadgeTree } from '@/components/BadgeTree'
-
-// Adapter from full TreeNode (with layout data) to simple BadgeTreeNode
-function adaptTreeNode(fullNode: import('@/data/tree').TreeNode): BadgeTreeNode {
-  return {
-    badge: fullNode.badge,
-    children: fullNode.children.map(adaptTreeNode),
-  }
-}
 
 export function meta({ data: loaderData }: Route.MetaArgs) {
   if (!loaderData) return [{ title: 'Nie znaleziono – Sprawności ZHR' }]
@@ -52,19 +45,24 @@ const LEVEL_LABELS: Record<1 | 2 | 3, string> = {
 export default function BadgePage({ loaderData }: Route.ComponentProps) {
   const { badge, group, prerequisite, treeRoot } = loaderData
 
-  // Convert treeRoot to BadgeTree format and count nodes
-  const { treeData, badgeCount } = (() => {
+  // Memoized tree conversion to avoid recalculation on re-renders
+  const { treeData, badgeCount } = useMemo(() => {
     if (!treeRoot) return { treeData: [], badgeCount: 0 }
 
-    const countNodes = (node: BadgeTreeNode): number => {
-      return 1 + node.children.reduce((sum, child) => sum + countNodes(child), 0)
-    }
+    const adaptTreeNode = (fullNode: import('@/data/tree').TreeNode): BadgeTreeNode => ({
+      badge: fullNode.badge,
+      children: fullNode.children.map(adaptTreeNode),
+    })
 
+    const countNodes = (node: BadgeTreeNode): number =>
+      1 + node.children.reduce((sum, child) => sum + countNodes(child), 0)
+
+    const adapted = adaptTreeNode(treeRoot)
     return {
-      treeData: [adaptTreeNode(treeRoot)],
-      badgeCount: countNodes(adaptTreeNode(treeRoot)),
+      treeData: [adapted],
+      badgeCount: countNodes(adapted),
     }
-  })()
+  }, [treeRoot])
 
   return (
     <div className="mx-auto max-w-3xl px-6 py-10 animate-fade-in">

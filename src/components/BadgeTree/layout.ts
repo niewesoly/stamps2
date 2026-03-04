@@ -128,14 +128,13 @@ function layoutTree(
   // Collect all nodes with their levels
   const nodeMap = new Map<string, { node: TreeNode; level: number; children: TreeNode[] }>()
   const levels = new Map<number, TreeNode[]>()
+  const MAX_DEPTH = 50 // Prevent stack overflow on deep trees
 
   function collectNodes(node: TreeNode, level: number): void {
-    if (visited.has(node.badge.id)) {
-      // Node already visited, but might be reached from another parent
-      return
-    }
-    visited.add(node.badge.id)
+    if (level > MAX_DEPTH) return
+    if (visited.has(node.badge.id)) return
 
+    visited.add(node.badge.id)
     nodeMap.set(node.badge.id, { node, level, children: node.children })
 
     if (!levels.has(level)) levels.set(level, [])
@@ -244,7 +243,8 @@ function layoutTree(
   // Build final nodes and lines
   const addedNodes = new Set<string>()
 
-  function collectNodesAndLines(node: TreeNode, localVisited = new Set<string>()): void {
+  function collectNodesAndLines(node: TreeNode, localVisited = new Set<string>(), depth = 0): void {
+    if (depth > MAX_DEPTH) return
     if (localVisited.has(node.badge.id)) return
     localVisited.add(node.badge.id)
     if (addedNodes.has(node.badge.id)) return
@@ -271,7 +271,7 @@ function layoutTree(
           y2: childPos.y - config.nodeSize / 2,
         })
       }
-      collectNodesAndLines(child, new Set(localVisited))
+      collectNodesAndLines(child, new Set(localVisited), depth + 1)
     })
   }
 

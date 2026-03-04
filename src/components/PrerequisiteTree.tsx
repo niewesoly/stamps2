@@ -1,4 +1,5 @@
 import { Link } from "react-router";
+import { useMemo } from "react";
 import type { TreeLayout, TreeNode } from "@/data/tree";
 import { NODE_WIDTH, NODE_HEIGHT } from "@/data/tree";
 import StarRating from "./StarRating";
@@ -8,15 +9,18 @@ interface PrerequisiteTreeProps {
 }
 
 export function PrerequisiteTree({ layout }: PrerequisiteTreeProps) {
-  const padding = 60;
-  const viewBoxWidth = layout.width + padding * 2;
-  const viewBoxHeight = layout.height + padding * 2;
+  const { viewBoxWidth, viewBoxHeight, centerOffset, contentWidth } = useMemo(() => {
+    const padding = 60;
+    const viewBoxWidth = layout.width + padding * 2;
+    const viewBoxHeight = layout.height + padding * 2;
 
-  // Find min/max X to center the viewBox
-  const minX = Math.min(...layout.nodes.map(n => n.x - NODE_WIDTH / 2));
-  const maxX = Math.max(...layout.nodes.map(n => n.x + NODE_WIDTH / 2));
-  const contentWidth = maxX - minX;
-  const centerOffset = (minX + maxX) / 2;
+    const minX = Math.min(...layout.nodes.map(n => n.x - NODE_WIDTH / 2));
+    const maxX = Math.max(...layout.nodes.map(n => n.x + NODE_WIDTH / 2));
+    const contentWidth = maxX - minX;
+    const centerOffset = (minX + maxX) / 2;
+
+    return { viewBoxWidth, viewBoxHeight, centerOffset, contentWidth };
+  }, [layout]);
 
   return (
     <div className="w-full overflow-x-auto rounded-xl border border-border bg-gradient-to-b from-muted/30 to-muted/10 p-4">
