@@ -34,3 +34,8 @@ jobs:
           TARGET: ${{ secrets.DEPLOY_PATH }}
           EXCLUDE: /.git/, /node_modules/
           ARGS: -avzr --delete
+          SCRIPT_BEFORE: |
+            mkdir -p ~/.ssh
+            ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts 2>/dev/null || true
+            echo "SSH connection test:"
+            ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no -o BatchMode=yes ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} "echo 'SSH connection successful'" || echo "SSH test failed, continuing with rsync..."
