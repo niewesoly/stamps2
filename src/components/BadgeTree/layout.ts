@@ -1,4 +1,4 @@
-import { type TreeNode, type NodePosition, type ConnectionLine, type LayoutResult } from './types'
+import { type TreeNode, type NodePosition, type ConnectionLine, type LayoutResult, type BadgeTreeVariant } from './types'
 import { sortTreeNodeChildren } from '@/data/tree-utils'
 
 interface LayoutConfig {
@@ -19,6 +19,16 @@ const DEFAULT_CONFIG: LayoutConfig = {
   containerMaxHeight: 280,
   tooltipSpace: 32,
   padding: 8,
+}
+
+const FULL_CONFIG: LayoutConfig = {
+  nodeSize: 72,
+  levelHeight: 110,
+  hSpacing: 48,
+  containerMaxWidth: 320,
+  containerMaxHeight: 800,
+  tooltipSpace: 36,
+  padding: 16,
 }
 
 /**
@@ -55,9 +65,12 @@ export function getLevelHeight(badgeCount: number): number {
 }
 
 /**
- * Get layout config based on badge count
+ * Get layout config based on badge count and variant
  */
-export function getLayoutConfig(badgeCount: number): LayoutConfig {
+export function getLayoutConfig(badgeCount: number, variant: BadgeTreeVariant = 'compact'): LayoutConfig {
+  if (variant === 'full') {
+    return FULL_CONFIG
+  }
   return {
     nodeSize: getBadgeSize(badgeCount),
     levelHeight: getLevelHeight(badgeCount),
@@ -238,12 +251,12 @@ function layoutTree(
 /**
  * Main layout calculation function
  */
-export function calculateLayout(treeData: TreeNode[], badgeCount: number): LayoutResult {
+export function calculateLayout(treeData: TreeNode[], badgeCount: number, variant: BadgeTreeVariant = 'compact'): LayoutResult {
   if (treeData.length === 0) {
     return { nodes: [], lines: [], width: 0, height: 0 }
   }
 
-  const config = getLayoutConfig(badgeCount)
+  const config = getLayoutConfig(badgeCount, variant)
 
   // Layout all trees
   const allNodes: NodePosition[] = []

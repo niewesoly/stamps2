@@ -132,7 +132,7 @@ function GroupCard({ group }: { group: BadgeGroup }) {
             ) : null}
 
             <div className="flex justify-center w-full overflow-hidden py-0.5">
-              <BadgeTree treeData={treeData} badgeCount={badgeCount} />
+              <BadgeTree treeData={treeData} badgeCount={badgeCount} interactive={false} />
             </div>
 
             {group.spec.badges.length <= 6 && (

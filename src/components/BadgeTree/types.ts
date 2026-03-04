@@ -1,5 +1,8 @@
 import { type BadgeSpec } from '@/data/types'
 
+export type BadgeTreeVariant = 'compact' | 'full'
+
+
 export interface TreeNode {
   badge: BadgeSpec
   children: TreeNode[]

@@ -1,12 +1,21 @@
 import { data, Link } from 'react-router'
 import type { Route } from './+types/badge'
 import { getBadgeBySlug, fetchBadgeGroups, findPrerequisiteById } from '@/data/api'
-import { buildPrerequisiteTree, calculateTreeLayout } from '@/data/tree'
+import { buildPrerequisiteTree } from '@/data/tree'
+import type { TreeNode as BadgeTreeNode } from '@/components/BadgeTree/types'
 import StarRating from '@/components/StarRating'
 import CategoryBadge from '@/components/CategoryBadge'
-import { PrerequisiteTree } from '@/components/PrerequisiteTree'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { BadgeTree } from '@/components/BadgeTree'
+
+// Adapter from full TreeNode (with layout data) to simple BadgeTreeNode
+function adaptTreeNode(fullNode: import('@/data/tree').TreeNode): BadgeTreeNode {
+  return {
+    badge: fullNode.badge,
+    children: fullNode.children.map(adaptTreeNode),
+  }
+}
 
 export function meta({ data: loaderData }: Route.MetaArgs) {
   if (!loaderData) return [{ title: 'Nie znaleziono – Sprawności ZHR' }]
@@ -25,14 +34,13 @@ export async function loader({ params }: Route.LoaderArgs) {
 
   // Build prerequisite tree (always expanded, vertical progress)
   const treeRoot = buildPrerequisiteTree(badge, allGroups)
-  const treeLayout = treeRoot ? calculateTreeLayout(treeRoot) : null
 
   const prerequisite =
     badge.basedOn.length > 0
       ? findPrerequisiteById(allGroups, badge.basedOn[0])
       : null
 
-  return { badge, group, prerequisite, treeLayout }
+  return { badge, group, prerequisite, treeRoot }
 }
 
 const LEVEL_LABELS: Record<1 | 2 | 3, string> = {
@@ -42,7 +50,21 @@ const LEVEL_LABELS: Record<1 | 2 | 3, string> = {
 }
 
 export default function BadgePage({ loaderData }: Route.ComponentProps) {
-  const { badge, group, prerequisite } = loaderData
+  const { badge, group, prerequisite, treeRoot } = loaderData
+
+  // Convert treeRoot to BadgeTree format and count nodes
+  const { treeData, badgeCount } = (() => {
+    if (!treeRoot) return { treeData: [], badgeCount: 0 }
+
+    const countNodes = (node: BadgeTreeNode): number => {
+      return 1 + node.children.reduce((sum, child) => sum + countNodes(child), 0)
+    }
+
+    return {
+      treeData: [adaptTreeNode(treeRoot)],
+      badgeCount: countNodes(adaptTreeNode(treeRoot)),
+    }
+  })()
 
   return (
     <div className="mx-auto max-w-3xl px-6 py-10 animate-fade-in">
@@ -149,15 +171,15 @@ export default function BadgePage({ loaderData }: Route.ComponentProps) {
         </ol>
       </section>
 
-      {/* Prerequisite Tree */}
-      {loaderData.treeLayout && loaderData.treeLayout.nodes.length > 1 && (
+      {/* Prerequisite Tree (New Style) */}
+      {treeData.length > 0 && badgeCount > 1 && (
         <section className="mb-12">
           <h2 className="text-xl font-bold text-foreground mb-6 flex items-center gap-3">
             Drzewo wymagań
             <span className="flex-1 h-px bg-border" />
           </h2>
-          <div className="overflow-x-auto">
-            <PrerequisiteTree layout={loaderData.treeLayout} />
+          <div className="w-full overflow-hidden flex justify-center bg-card/40 rounded-3xl border border-border/50 p-6 min-h-[300px]">
+            <BadgeTree treeData={treeData} badgeCount={badgeCount} variant="full" />
           </div>
         </section>
       )}

@@ -3,15 +3,16 @@ import { type NodePosition } from './types'
 interface BadgeNodeProps {
   position: NodePosition
   nodeSize: number
+  interactive?: boolean
 }
 
-export function BadgeNode({ position, nodeSize }: BadgeNodeProps) {
+export function BadgeNode({ position, nodeSize, interactive = true }: BadgeNodeProps) {
   const { badge, x, y } = position
 
   return (
-    // Wrapper with group context and high z-index for tooltip
-    <div
-      className="absolute group/badge cursor-default"
+    <a
+      href={interactive ? `/sprawnosc/${badge.slug}` : undefined}
+      className={`absolute group/badge block ${interactive ? 'cursor-pointer' : 'cursor-default pointer-events-none'}`}
       style={{
         left: x - nodeSize / 2,
         top: y - nodeSize / 2,
@@ -20,7 +21,7 @@ export function BadgeNode({ position, nodeSize }: BadgeNodeProps) {
       }}
     >
       {/* Badge icon */}
-      <div className="w-full h-full flex items-center justify-center p-0.5 transition-transform duration-300 group-hover/badge:scale-110 bg-card rounded-full shadow-sm ring-2 ring-transparent group-hover/badge:ring-primary/20 relative z-10">
+      <div className="w-full h-full flex items-center justify-center p-0.5 transition-transform duration-300 group-hover/badge:scale-110 bg-card rounded-full shadow-sm ring-2 ring-transparent group-hover/badge:ring-primary/20 relative z-10 hover:shadow-primary/20 hover:shadow-lg">
         {badge.iconUrl ? (
           <img
             src={badge.iconUrl}
@@ -44,6 +45,6 @@ export function BadgeNode({ position, nodeSize }: BadgeNodeProps) {
       >
         {badge.name}
       </span>
-    </div>
+    </a>
   )
 }
