@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useMemo } from 'react'
+import { useState, useRef, useMemo } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router'
 import { Home, BookOpen, Search, X } from 'lucide-react'
 import Fuse from 'fuse.js'
@@ -28,138 +28,167 @@ interface HeaderProps {
   groups: BadgeGroup[]
 }
 
+/* ─────────────────────────────────────────────
+   Logo Component
+   ───────────────────────────────────────────── */
+function HeaderLogo() {
+  return (
+    <Link
+      to="/"
+      className="flex items-center gap-2.5 shrink-0 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-lg p-1 -ml-1 transition-all"
+    >
+      <div className="w-8 h-8 flex items-center justify-center rounded-xl bg-white/5 overflow-hidden transition-transform group-hover:scale-105 duration-300">
+        <img
+          src="/stamps-logo.png"
+          alt="Stamps Logo"
+          className="w-full h-full object-cover scale-[1.3]"
+        />
+      </div>
+      <div className="leading-none flex flex-col justify-center">
+        <span className="font-bold text-foreground tracking-tight text-[15px] sm:text-lg">
+          Stamps
+        </span>
+        <span className="text-[0.5rem] sm:text-[0.6rem] font-semibold tracking-[0.15em] uppercase text-muted-foreground/70 mt-px hidden min-[360px]:block">
+          Książeczka Sprawności
+        </span>
+      </div>
+    </Link>
+  )
+}
+
+/* ─────────────────────────────────────────────
+   Desktop Navigation (Pill-style)
+   ───────────────────────────────────────────── */
+function DesktopNav({ location }: { location: ReturnType<typeof useLocation> }) {
+  return (
+    <nav className="flex items-center gap-1 bg-muted/40 rounded-full p-1 border border-border/30 shrink-0">
+      {NAV_ITEMS.map(({ to, label, icon: Icon }) => {
+        const isActive = location.pathname === to
+        return (
+          <Link
+            key={to}
+            to={to}
+            className={`flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold tracking-wide transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${isActive
+                ? 'bg-background text-foreground shadow-sm'
+                : 'text-muted-foreground hover:text-foreground hover:bg-background/50'
+              }`}
+          >
+            <Icon className="w-3.5 h-3.5" />
+            {label}
+          </Link>
+        )
+      })}
+    </nav>
+  )
+}
+
+/* ─────────────────────────────────────────────
+   Top Bar Component
+   ───────────────────────────────────────────── */
+function TopBar({ groups, onSearchClick }: { groups: BadgeGroup[]; onSearchClick: () => void }) {
+  const location = useLocation()
+
+  return (
+    <header className="sticky top-0 z-50 bg-background/60 backdrop-blur-2xl border-b border-border/30 shadow-[0_1px_3px_rgba(0,0,0,0.04)] transition-all duration-300">
+      <div className="mx-auto max-w-6xl px-3 sm:px-6 h-12 sm:h-14 flex items-center justify-between gap-3">
+        <HeaderLogo />
+
+        {/* Desktop: inline search + pill nav */}
+        <div className="hidden sm:flex items-center gap-3 flex-1 justify-end">
+          <div className="relative max-w-xs flex-1">
+            <CompactSearch groups={groups} />
+          </div>
+          <DesktopNav location={location} />
+        </div>
+
+        {/* Mobile: search icon in top bar */}
+        <button
+          onClick={onSearchClick}
+          className="sm:hidden flex items-center justify-center w-10 h-10 rounded-full text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+          aria-label="Szukaj"
+        >
+          <Search className="w-5 h-5" />
+        </button>
+      </div>
+    </header>
+  )
+}
+
+/* ─────────────────────────────────────────────
+   Mobile Bottom Tab Bar
+   ───────────────────────────────────────────── */
+function MobileTabBar({ location, searchOpen, onSearchClick }: {
+  location: ReturnType<typeof useLocation>
+  searchOpen: boolean
+  onSearchClick: () => void
+}) {
+  return (
+    <nav
+      className="sm:hidden fixed bottom-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-2xl border-t border-border/30 shadow-[0_-2px_12px_rgba(0,0,0,0.08)]"
+      role="tablist"
+      aria-label="Nawigacja główna"
+    >
+      <div className="flex items-stretch justify-around h-16 max-w-md mx-auto px-2">
+        {NAV_ITEMS.map(({ to, label, icon: Icon }) => {
+          const isActive = location.pathname === to && !searchOpen
+          return (
+            <Link
+              key={to}
+              to={to}
+              role="tab"
+              aria-selected={isActive}
+              className={`flex flex-col items-center justify-center gap-0.5 flex-1 py-1 rounded-xl transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary mx-1 ${isActive
+                  ? 'text-primary'
+                  : 'text-muted-foreground active:scale-95'
+                }`}
+            >
+              <div
+                className={`flex items-center justify-center w-10 h-7 rounded-full transition-all duration-200 ${isActive ? 'bg-primary/12 scale-105' : ''
+                  }`}
+              >
+                <Icon className={`w-5 h-5 transition-all duration-200 ${isActive ? 'stroke-[2.5]' : 'stroke-[1.5]'}`} />
+              </div>
+              <span className={`text-[10px] font-semibold tracking-wide transition-all duration-200 ${isActive ? 'text-primary' : ''}`}>
+                {label}
+              </span>
+            </Link>
+          )
+        })}
+
+        {/* Search tab */}
+        <button
+          role="tab"
+          aria-selected={searchOpen}
+          onClick={onSearchClick}
+          className={`flex flex-col items-center justify-center gap-0.5 flex-1 py-1 rounded-xl transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary mx-1 ${searchOpen
+              ? 'text-primary'
+              : 'text-muted-foreground active:scale-95'
+            }`}
+        >
+          <div
+            className={`flex items-center justify-center w-10 h-7 rounded-full transition-all duration-200 ${searchOpen ? 'bg-primary/12 scale-105' : ''
+              }`}
+          >
+            <Search className={`w-5 h-5 transition-all duration-200 ${searchOpen ? 'stroke-[2.5]' : 'stroke-[1.5]'}`} />
+          </div>
+          <span className={`text-[10px] font-semibold tracking-wide transition-all duration-200 ${searchOpen ? 'text-primary' : ''}`}>
+            Szukaj
+          </span>
+        </button>
+      </div>
+      <div className="h-[env(safe-area-inset-bottom,0px)]" />
+    </nav>
+  )
+}
+
 export default function Header({ groups }: HeaderProps) {
   const location = useLocation()
   const [searchOpen, setSearchOpen] = useState(false)
 
-  // Close search when route changes
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setSearchOpen(false)
-  }, [location.pathname])
-
   return (
     <>
-      {/* ───── Top Bar ───── */}
-      <header className="sticky top-0 z-50 bg-background/60 backdrop-blur-2xl border-b border-border/30 shadow-[0_1px_3px_rgba(0,0,0,0.04)] transition-all duration-300">
-        <div className="mx-auto max-w-6xl px-3 sm:px-6 h-12 sm:h-14 flex items-center justify-between gap-3">
-          {/* Logo */}
-          <Link
-            to="/"
-            className="flex items-center gap-2.5 shrink-0 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-lg p-1 -ml-1 transition-all"
-          >
-            <div className="w-8 h-8 flex items-center justify-center rounded-xl bg-white/5 overflow-hidden transition-transform group-hover:scale-105 duration-300">
-              <img
-                src="/stamps-logo.png"
-                alt="Stamps Logo"
-                className="w-full h-full object-cover scale-[1.3]"
-              />
-            </div>
-            <div className="leading-none flex flex-col justify-center">
-              <span className="font-bold text-foreground tracking-tight text-[15px] sm:text-lg">
-                Stamps
-              </span>
-              <span className="text-[0.5rem] sm:text-[0.6rem] font-semibold tracking-[0.15em] uppercase text-muted-foreground/70 mt-px hidden min-[360px]:block">
-                Książeczka Sprawności
-              </span>
-            </div>
-          </Link>
-
-          {/* Desktop: inline search + pill nav */}
-          <div className="hidden sm:flex items-center gap-3 flex-1 justify-end">
-            {/* Compact search trigger */}
-            <div className="relative max-w-xs flex-1">
-              <CompactSearch groups={groups} />
-            </div>
-
-            {/* Pill nav */}
-            <nav className="flex items-center gap-1 bg-muted/40 rounded-full p-1 border border-border/30 shrink-0">
-              {NAV_ITEMS.map(({ to, label, icon: Icon }) => {
-                const isActive = location.pathname === to
-                return (
-                  <Link
-                    key={to}
-                    to={to}
-                    className={`flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold tracking-wide transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${isActive
-                        ? 'bg-background text-foreground shadow-sm'
-                        : 'text-muted-foreground hover:text-foreground hover:bg-background/50'
-                      }`}
-                  >
-                    <Icon className="w-3.5 h-3.5" />
-                    {label}
-                  </Link>
-                )
-              })}
-            </nav>
-          </div>
-
-          {/* Mobile: search icon in top bar */}
-          <button
-            onClick={() => setSearchOpen(true)}
-            className="sm:hidden flex items-center justify-center w-10 h-10 rounded-full text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-            aria-label="Szukaj"
-          >
-            <Search className="w-5 h-5" />
-          </button>
-        </div>
-      </header>
-
-      {/* ───── Mobile Bottom Tab Bar ───── */}
-      <nav
-        className="sm:hidden fixed bottom-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-2xl border-t border-border/30 shadow-[0_-2px_12px_rgba(0,0,0,0.08)]"
-        role="tablist"
-        aria-label="Nawigacja główna"
-      >
-        <div className="flex items-stretch justify-around h-16 max-w-md mx-auto px-2">
-          {NAV_ITEMS.map(({ to, label, icon: Icon }) => {
-            const isActive = location.pathname === to && !searchOpen
-            return (
-              <Link
-                key={to}
-                to={to}
-                role="tab"
-                aria-selected={isActive}
-                className={`flex flex-col items-center justify-center gap-0.5 flex-1 py-1 rounded-xl transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary mx-1 ${isActive
-                    ? 'text-primary'
-                    : 'text-muted-foreground active:scale-95'
-                  }`}
-              >
-                <div
-                  className={`flex items-center justify-center w-10 h-7 rounded-full transition-all duration-200 ${isActive ? 'bg-primary/12 scale-105' : ''
-                    }`}
-                >
-                  <Icon className={`w-5 h-5 transition-all duration-200 ${isActive ? 'stroke-[2.5]' : 'stroke-[1.5]'}`} />
-                </div>
-                <span className={`text-[10px] font-semibold tracking-wide transition-all duration-200 ${isActive ? 'text-primary' : ''}`}>
-                  {label}
-                </span>
-              </Link>
-            )
-          })}
-
-          {/* Search tab */}
-          <button
-            role="tab"
-            aria-selected={searchOpen}
-            onClick={() => setSearchOpen(true)}
-            className={`flex flex-col items-center justify-center gap-0.5 flex-1 py-1 rounded-xl transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary mx-1 ${searchOpen
-                ? 'text-primary'
-                : 'text-muted-foreground active:scale-95'
-              }`}
-          >
-            <div
-              className={`flex items-center justify-center w-10 h-7 rounded-full transition-all duration-200 ${searchOpen ? 'bg-primary/12 scale-105' : ''
-                }`}
-            >
-              <Search className={`w-5 h-5 transition-all duration-200 ${searchOpen ? 'stroke-[2.5]' : 'stroke-[1.5]'}`} />
-            </div>
-            <span className={`text-[10px] font-semibold tracking-wide transition-all duration-200 ${searchOpen ? 'text-primary' : ''}`}>
-              Szukaj
-            </span>
-          </button>
-        </div>
-        <div className="h-[env(safe-area-inset-bottom,0px)]" />
-      </nav>
+      <TopBar groups={groups} onSearchClick={() => setSearchOpen(true)} />
+      <MobileTabBar location={location} searchOpen={searchOpen} onSearchClick={() => setSearchOpen(true)} />
 
       {/* ───── Mobile Full-Screen Search Overlay ───── */}
       {searchOpen && (
