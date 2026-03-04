@@ -5,6 +5,12 @@ import badgesData from './badges-data.json'
 const API_URL = 'https://stamps.zhr.pl/api/badges'
 const ICON_BASE = 'https://stamps.zhr.pl/img/form/'
 
+// Icon URLs are NOT included in returned data to prevent React Router from auto-preloading all images
+// Build icon URLs in components when needed using buildIconUrl() helper
+export function buildIconUrl(iconId: string | null): string | null {
+  return iconId ? `${ICON_BASE}${iconId}` : null
+}
+
 interface ApiResponse {
   badges: ApiGroup[]
   categories: ApiCategory[]
@@ -105,6 +111,8 @@ export function getCategoryOrdinal(categoryId: number): number {
 
 /**
  * Process raw API data into BadgeGroup array.
+ * Note: Does NOT include iconUrl in badges to prevent React Router from auto-preloading all images.
+ * Components should build icon URLs using buildIconUrl() helper when needed.
  */
 function processBadgeData(data: ApiResponse): BadgeGroup[] {
   return data.badges
@@ -114,6 +122,7 @@ function processBadgeData(data: ApiResponse): BadgeGroup[] {
         const nameSlug = slugify(badge.name)
         const shortId = badge.id.split('-')[0]
         const slug = `${nameSlug}-${shortId}`
+        const iconId = group.spec.badgeIcons[badge.id] || null
 
         return {
           id: badge.id,
@@ -122,9 +131,7 @@ function processBadgeData(data: ApiResponse): BadgeGroup[] {
           stars: badge.stars as 1 | 2 | 3,
           requirements: badge.requirements,
           basedOn: badge.basedOn,
-          iconUrl: group.spec.badgeIcons[badge.id]
-            ? `${ICON_BASE}${group.spec.badgeIcons[badge.id]}`
-            : null,
+          iconId, // Store only the icon ID, not full URL
         }
       })
       let formattedGroupName = group.spec.name;

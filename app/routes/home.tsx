@@ -73,7 +73,6 @@ export default function HomePage({ loaderData }: Route.ComponentProps) {
                 height="96"
                 className="w-full h-full object-cover scale-[1.3]"
                 decoding="async"
-                fetchPriority="high"
               />
             </div>
           </div>

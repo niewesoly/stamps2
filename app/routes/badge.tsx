@@ -1,7 +1,7 @@
 import { data, Link } from 'react-router'
 import { useMemo } from 'react'
 import type { Route } from './+types/badge'
-import { getBadgeBySlug, fetchBadgeGroups, findPrerequisiteById } from '@/data/api'
+import { getBadgeBySlug, fetchBadgeGroups, findPrerequisiteById, buildIconUrl } from '@/data/api'
 import { buildPrerequisiteTree } from '@/data/tree'
 import type { TreeNode as BadgeTreeNode } from '@/components/BadgeTree/types'
 import StarRating from '@/components/StarRating'
@@ -15,7 +15,8 @@ export function meta({ data: loaderData }: Route.MetaArgs) {
 
   const title = `${loaderData.badge.name} – ${loaderData.group.spec.name} – Sprawności ZHR`
   const description = loaderData.badge.requirements[0] ?? ''
-  const image = loaderData.badge.iconUrl || '/og-image.png'
+  const iconUrl = buildIconUrl(loaderData.badge.iconId)
+  const image = iconUrl || '/og-image.png'
 
   return [
     { title },
@@ -59,6 +60,7 @@ const LEVEL_LABELS: Record<1 | 2 | 3, string> = {
 
 export default function BadgePage({ loaderData }: Route.ComponentProps) {
   const { badge, group, prerequisite, treeRoot } = loaderData
+  const prerequisiteIconUrl = buildIconUrl(prerequisite?.iconId || null)
 
   // Memoized tree conversion to avoid recalculation on re-renders
   const { treeData, badgeCount } = useMemo(() => {
@@ -102,9 +104,9 @@ export default function BadgePage({ loaderData }: Route.ComponentProps) {
             {/* Icon */}
             <div className="shrink-0 mx-auto sm:mx-0">
               <div className="flex items-center justify-center w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-primary/10 border border-primary/20">
-                {badge.iconUrl ? (
+                {buildIconUrl(badge.iconId) ? (
                   <img
-                    src={badge.iconUrl}
+                    src={buildIconUrl(badge.iconId)}
                     alt={badge.name}
                     className="w-16 h-16 sm:w-20 sm:h-20 object-contain drop-shadow-sm"
                     loading="lazy"
@@ -154,8 +156,8 @@ export default function BadgePage({ loaderData }: Route.ComponentProps) {
             to={`/sprawnosc/${prerequisite.slug}`}
             className="text-foreground hover:text-primary font-medium flex items-center gap-2 transition-colors w-fit p-1 min-h-[44px] rounded-lg focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/60"
           >
-            {prerequisite.iconUrl && (
-              <img src={prerequisite.iconUrl} alt="" className="w-6 h-6 object-contain rounded-full bg-orange-100/50 dark:bg-orange-900/50 p-0.5 border border-orange-200/50 dark:border-orange-800/50" loading="lazy" decoding="async" />
+            {prerequisiteIconUrl && (
+              <img src={prerequisiteIconUrl} alt="" className="w-6 h-6 object-contain rounded-full bg-orange-100/50 dark:bg-orange-900/50 p-0.5 border border-orange-200/50 dark:border-orange-800/50" loading="lazy" decoding="async" />
             )}
             <span className="font-semibold px-1">{prerequisite.name}</span>
             <StarRating stars={prerequisite.stars} size="sm" />

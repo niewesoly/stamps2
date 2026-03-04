@@ -1,6 +1,7 @@
 import StarRating from '@/components/StarRating'
 import CategoryBadge from '@/components/CategoryBadge'
 import type { SearchResult } from '@/data/search'
+import { buildIconUrl } from '@/data/api'
 
 interface SearchResultItemProps {
   result: SearchResult
@@ -19,6 +20,7 @@ export function SearchResultItem({
   onSelect,
   onHover,
 }: SearchResultItemProps) {
+  const iconUrl = result.iconId ? buildIconUrl(result.iconId) : null
   const isSelected = selectedIndex === index
   const key = result.type === 'badge' ? `badge-${result.badgeSlug}` : `group-${result.groupSlug}`
   const href = result.type === 'group' ? `/${result.groupSlug}` : `/sprawnosc/${result.badgeSlug}`
@@ -39,7 +41,7 @@ export function SearchResultItem({
       onMouseEnter={() => onHover(index)}
       className={`${baseClasses} ${selectedClasses}`}
     >
-      {result.iconUrl && (
+      {iconUrl && (
         <div className={`
           ${variant === 'compact' ? 'w-9 h-9 rounded-full' : 'w-12 h-12 rounded-full'}
           shrink-0 border flex items-center justify-center p-1.5 transition-colors
@@ -48,7 +50,7 @@ export function SearchResultItem({
             : variant === 'compact' ? 'bg-primary/5 border-primary/10' : 'bg-primary/5 border-primary/10'
           }
         `}>
-          <img src={result.iconUrl} alt="" className="w-full h-full object-contain" />
+          <img src={result.iconUrl} alt="" className="w-full h-full object-contain" loading="lazy" decoding="async" />
         </div>
       )}
       <div className="min-w-0 flex-1">

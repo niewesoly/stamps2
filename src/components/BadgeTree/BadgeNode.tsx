@@ -1,4 +1,5 @@
 import { type NodePosition } from './types'
+import { buildIconUrl } from '@/data/api'
 
 interface BadgeNodeProps {
   position: NodePosition
@@ -40,13 +41,17 @@ export function BadgeNode({ position, nodeSize, interactive = true }: BadgeNodeP
 }
 
 function BadgeIcon({ badge, interactive }: { badge: NodePosition['badge']; interactive: boolean }) {
+  const iconUrl = buildIconUrl(badge.iconId)
+
   return (
     <div className={`w-full h-full flex items-center justify-center p-0.5 transition-transform duration-300 ${interactive ? 'group-hover/badge:scale-110' : ''} bg-card rounded-full shadow-sm ${interactive ? 'ring-2 ring-transparent group-hover/badge:ring-primary/20 hover:shadow-primary/20 hover:shadow-lg' : ''} relative z-10`}>
-      {badge.iconUrl ? (
+      {iconUrl ? (
         <img
-          src={badge.iconUrl}
+          src={iconUrl}
           alt={badge.name}
           className="w-full h-full object-contain filter drop-shadow-[0_2px_4px_rgba(0,0,0,0.1)] transition-all"
+          loading="lazy"
+          decoding="async"
         />
       ) : (
         <div className="w-full h-full rounded-full border-2 border-dashed border-border flex items-center justify-center bg-background/50">

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router'
 import Fuse from 'fuse.js'
 import type { BadgeGroup } from '@/data/types'
 import { buildSearchIndex, type SearchResult, type SearchDocument } from '@/data/search'
+import { buildIconUrl } from '@/data/api'
 import CategoryBadge from './CategoryBadge'
 import StarRating from './StarRating'
 
@@ -122,10 +123,10 @@ export default function SearchBar({ groups }: Props) {
         >
           {results.map((r, i) => {
             const isSelected = selectedIndex === i
-            // Create stable key from type + slug (badgeSlug for badges, groupSlug for groups)
             const key = r.type === 'badge'
               ? `badge-${r.badgeSlug}`
               : `group-${r.groupSlug}`
+            const iconUrl = r.iconId ? buildIconUrl(r.iconId) : null
             return (
               <a
                 key={key}
@@ -139,9 +140,9 @@ export default function SearchBar({ groups }: Props) {
                 // Focus styling for keyboard users
                 onFocus={() => setSelectedIndex(i)}
               >
-                {r.iconUrl && (
+                {iconUrl && (
                   <div className={`w-14 h-14 shrink-0 rounded-full border flex items-center justify-center p-1.5 transition-colors ${isSelected ? 'bg-primary/20 border-primary/30' : 'bg-primary/5 border-primary/10'}`}>
-                    <img src={r.iconUrl} alt="" className="w-full h-full object-contain drop-shadow-sm" loading="lazy" decoding="async" />
+                    <img src={iconUrl} alt="" className="w-full h-full object-contain drop-shadow-sm" loading="lazy" decoding="async" />
                   </div>
                 )}
                 <div className="min-w-0 flex-1 flex flex-col items-start gap-1">

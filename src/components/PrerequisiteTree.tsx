@@ -2,6 +2,7 @@ import { Link } from "react-router";
 import { useMemo } from "react";
 import type { TreeLayout, TreeNode } from "@/data/tree";
 import { NODE_WIDTH, NODE_HEIGHT } from "@/data/tree";
+import { buildIconUrl } from "@/data/api";
 import StarRating from "./StarRating";
 
 interface PrerequisiteTreeProps {
@@ -105,6 +106,7 @@ interface TreeNodeComponentProps {
 
 function TreeNodeComponent({ node }: TreeNodeComponentProps) {
   const { badge, x, y } = node;
+  const iconUrl = buildIconUrl(badge.iconId)
 
   return (
     <g transform={`translate(${x - NODE_WIDTH / 2}, ${y - NODE_HEIGHT / 2})`}>
@@ -133,11 +135,13 @@ function TreeNodeComponent({ node }: TreeNodeComponentProps) {
         <foreignObject x="10" y="8" width={NODE_WIDTH - 20} height={NODE_HEIGHT - 16}>
           <div className="flex flex-col h-full justify-between">
             <div className="flex items-start gap-2">
-              {badge.iconUrl ? (
+              {iconUrl ? (
                 <img
-                  src={badge.iconUrl}
+                  src={iconUrl}
                   alt=""
                   className="w-10 h-10 object-contain shrink-0"
+                  loading="lazy"
+                  decoding="async"
                 />
               ) : (
                 <div className="w-10 h-10 rounded-full bg-gradient-to-br from-amber-100 to-amber-200 shrink-0 flex items-center justify-center text-xs font-bold text-amber-700">

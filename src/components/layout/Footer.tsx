@@ -7,7 +7,15 @@ export default function Footer() {
         {/* Brand */}
         <div className="flex items-center justify-center gap-2 w-full sm:w-auto">
           <div className="w-6 h-6 rounded-md overflow-hidden bg-white/5">
-            <img src="/stamps-logo.png" alt="" className="w-full h-full object-cover scale-[1.3]" />
+            <img
+              src="/stamps-logo.webp"
+              alt=""
+              className="w-full h-full object-cover scale-[1.3]"
+              width="24"
+              height="24"
+              loading="lazy"
+              decoding="async"
+            />
           </div>
           <span className="text-sm font-semibold tracking-wide text-foreground/80">
             Stamps

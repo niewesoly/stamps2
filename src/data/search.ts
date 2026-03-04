@@ -8,7 +8,7 @@ export interface SearchResult {
   badgeSlug?: string
   badgeName?: string
   stars?: 1 | 2 | 3
-  iconUrl?: string | null
+  iconId?: string | null // Store only icon ID, not full URL
   category: 1 | 2 | 3 | 4 | 5 | 6
 }
 
@@ -50,7 +50,7 @@ export function buildSearchIndex(groups: BadgeGroup[]): Fuse<SearchDocument> {
           badgeSlug: badge.slug,
           badgeName: badge.name,
           stars: badge.stars,
-          iconUrl: badge.iconUrl,
+          iconId: badge.iconId,
           category: group.category,
         },
       })

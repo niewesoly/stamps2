@@ -1,12 +1,9 @@
 import type { BadgeSpec, BadgeGroup } from '@/data/types'
+import { buildIconUrl } from '@/data/api'
 import StarRating from './StarRating'
 
-interface Props {
-  badge: BadgeSpec
-  group: BadgeGroup
-}
-
 export default function BadgeCard({ badge, group }: Props) {
+  const iconUrl = buildIconUrl(badge.iconId)
   return (
     <a
       href={`/sprawnosc/${badge.slug}`}
@@ -16,9 +13,9 @@ export default function BadgeCard({ badge, group }: Props) {
         {/* Left Side: Prominent Icon */}
         <div className="shrink-0">
           <div className="w-16 h-16 sm:w-20 sm:h-20 flex items-center justify-center rounded-full bg-linear-to-br from-primary/15 to-primary/5 border border-primary/20 group-hover:scale-105 group-hover:border-primary/40 transition-all duration-300 shadow-sm overflow-hidden p-2">
-            {badge.iconUrl ? (
+            {iconUrl ? (
               <img
-                src={badge.iconUrl}
+                src={iconUrl}
                 alt={badge.name}
                 className="w-full h-full object-contain"
                 loading="lazy"

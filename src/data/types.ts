@@ -5,7 +5,12 @@ export interface BadgeSpec {
   stars: 1 | 2 | 3
   requirements: string[]
   basedOn: string[]
-  iconUrl: string | null
+  iconId: string | null // Store only icon ID to prevent React Router auto-preload
+}
+
+/** Build full icon URL from iconId */
+export function buildIconUrl(iconId: string | null): string | null {
+  return iconId ? `https://stamps.zhr.pl/img/form/${iconId}` : null
 }
 
 export interface BadgeGroup {

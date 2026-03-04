@@ -8,9 +8,13 @@ export default function HeaderLogo() {
     >
       <div className="w-8 h-8 flex items-center justify-center rounded-xl bg-white/5 overflow-hidden transition-transform group-hover:scale-105 duration-300">
         <img
-          src="/stamps-logo.png"
+          src="/stamps-logo.webp"
           alt="Stamps Logo"
           className="w-full h-full object-cover scale-[1.3]"
+          width="32"
+          height="32"
+          loading="lazy"
+          decoding="async"
         />
       </div>
       <div className="leading-none flex flex-col justify-center">
