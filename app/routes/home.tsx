@@ -70,7 +70,7 @@ export default function HomePage({ loaderData }: Route.ComponentProps) {
             </div>
           </div>
 
-          <div className="max-w-xl mx-auto mb-6 transform transition-all relative z-50">
+          <div className="hidden sm:block max-w-xl mx-auto mb-6 transform transition-all relative z-50">
             <SearchBar groups={groups} />
           </div>
 

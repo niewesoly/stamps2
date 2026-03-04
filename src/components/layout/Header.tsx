@@ -13,7 +13,7 @@ export default function Header({ groups }: HeaderProps) {
 
   return (
     <>
-      <TopBar groups={groups} onSearchClick={() => setSearchOpen(true)} />
+      <TopBar groups={groups} />
       <MobileTabBar searchOpen={searchOpen} onSearchClick={() => setSearchOpen(true)} />
 
       {/* ───── Mobile Full-Screen Search Overlay ───── */}
