@@ -1,6 +1,13 @@
 import { type TreeNode, type NodePosition, type ConnectionLine, type LayoutResult, type BadgeTreeVariant } from './types'
 import { sortTreeNodeChildren } from '@/data/tree-utils'
 
+// Badge size thresholds - number of badges in the tree
+const SIZE_THRESHOLD_SMALL = 4
+const SIZE_THRESHOLD_MEDIUM = 8
+const SIZE_THRESHOLD_LARGE = 12
+const SIZE_THRESHOLD_XLARGE = 20
+
+// Layout configuration constants
 interface LayoutConfig {
   nodeSize: number
   levelHeight: number
@@ -31,37 +38,62 @@ const FULL_CONFIG: LayoutConfig = {
   padding: 16,
 }
 
+// Badge size mapping based on tree density
+const BADGE_SIZE_MAP = {
+  small: 56,    // ≤4 badges
+  medium: 44,   // ≤8 badges
+  large: 36,    // ≤12 badges
+  xlarge: 30,   // ≤20 badges
+  dense: 26,    // >20 badges
+} as const
+
+const H_SPACING_MAP = {
+  small: 24,
+  medium: 18,
+  large: 14,
+  xlarge: 10,
+  dense: 8,
+} as const
+
+const LEVEL_HEIGHT_MAP = {
+  small: 70,
+  medium: 58,
+  large: 48,
+  xlarge: 40,
+  dense: 36,
+} as const
+
 /**
  * Get badge size based on count to fit within card
  */
 export function getBadgeSize(badgeCount: number): number {
-  if (badgeCount <= 4) return 56
-  if (badgeCount <= 8) return 44
-  if (badgeCount <= 12) return 36
-  if (badgeCount <= 20) return 30
-  return 26
+  if (badgeCount <= SIZE_THRESHOLD_SMALL) return BADGE_SIZE_MAP.small
+  if (badgeCount <= SIZE_THRESHOLD_MEDIUM) return BADGE_SIZE_MAP.medium
+  if (badgeCount <= SIZE_THRESHOLD_LARGE) return BADGE_SIZE_MAP.large
+  if (badgeCount <= SIZE_THRESHOLD_XLARGE) return BADGE_SIZE_MAP.xlarge
+  return BADGE_SIZE_MAP.dense
 }
 
 /**
  * Get horizontal spacing based on badge count
  */
 export function getHorizontalSpacing(badgeCount: number): number {
-  if (badgeCount <= 4) return 24
-  if (badgeCount <= 8) return 18
-  if (badgeCount <= 12) return 14
-  if (badgeCount <= 20) return 10
-  return 8
+  if (badgeCount <= SIZE_THRESHOLD_SMALL) return H_SPACING_MAP.small
+  if (badgeCount <= SIZE_THRESHOLD_MEDIUM) return H_SPACING_MAP.medium
+  if (badgeCount <= SIZE_THRESHOLD_LARGE) return H_SPACING_MAP.large
+  if (badgeCount <= SIZE_THRESHOLD_XLARGE) return H_SPACING_MAP.xlarge
+  return H_SPACING_MAP.dense
 }
 
 /**
  * Get level height based on badge count
  */
 export function getLevelHeight(badgeCount: number): number {
-  if (badgeCount <= 4) return 70
-  if (badgeCount <= 8) return 58
-  if (badgeCount <= 12) return 48
-  if (badgeCount <= 20) return 40
-  return 36
+  if (badgeCount <= SIZE_THRESHOLD_SMALL) return LEVEL_HEIGHT_MAP.small
+  if (badgeCount <= SIZE_THRESHOLD_MEDIUM) return LEVEL_HEIGHT_MAP.medium
+  if (badgeCount <= SIZE_THRESHOLD_LARGE) return LEVEL_HEIGHT_MAP.large
+  if (badgeCount <= SIZE_THRESHOLD_XLARGE) return LEVEL_HEIGHT_MAP.xlarge
+  return LEVEL_HEIGHT_MAP.dense
 }
 
 /**

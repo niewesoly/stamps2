@@ -53,11 +53,11 @@ export function buildPrerequisiteTree(
       y: depth * LEVEL_HEIGHT,
       width: NODE_WIDTH,
       mod: 0,
-      ancestor: {} as TreeNode,
+      ancestor: null!, // Will be set to self-reference below
       parent,
       number,
     };
-    node.ancestor = node;
+    node.ancestor = node; // Self-reference for tree algorithm
 
     // Build children from basedOn (prerequisites)
     const prerequisites = badge.basedOn || [];

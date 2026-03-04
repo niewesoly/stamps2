@@ -105,50 +105,72 @@ export function getCategoryOrdinal(categoryId: number): number {
 export async function fetchBadgeGroups(): Promise<BadgeGroup[]> {
   if (_cache) return _cache
 
-  const res = await fetch(API_URL)
-  if (!res.ok) throw new Error(`API error: ${res.status}`)
-  const data = (await res.json()) as ApiResponse
+  try {
+    const res = await fetch(API_URL)
+    if (!res.ok) {
+      throw new Error(`API responded with status ${res.status}: ${res.statusText}`)
+    }
 
-  // Cache categories for lookup
-  _categories = data.categories
+    const data = await res.json()
 
-  _cache = data.badges
-    .sort((a, b) => a.ordinal - b.ordinal || a.category - b.category)
-    .map(group => {
-      const badges: BadgeSpec[] = group.spec.badges.map(badge => {
-        // Unique slug: {name}-{id} to handle duplicate names (e.g., "Strzelec" 2★ and 3★)
-        const nameSlug = slugify(badge.name)
-        const shortId = badge.id.split('-')[0] // e.g., "3e7e8570" from "3e7e8570-f7d3-..."
-        const slug = `${nameSlug}-${shortId}`
+    // Runtime validation of API response structure
+    if (!data || typeof data !== 'object') {
+      throw new Error('API returned invalid response format: expected object')
+    }
+    if (!Array.isArray(data.badges)) {
+      throw new Error('API returned invalid response format: missing badges array')
+    }
+    if (!Array.isArray(data.categories)) {
+      throw new Error('API returned invalid response format: missing categories array')
+    }
+
+    const response = data as ApiResponse
+
+    // Cache categories for lookup
+    _categories = response.categories
+
+    _cache = response.badges
+      .sort((a, b) => a.ordinal - b.ordinal || a.category - b.category)
+      .map(group => {
+        const badges: BadgeSpec[] = group.spec.badges.map(badge => {
+          // Unique slug: {name}-{id} to handle duplicate names (e.g., "Strzelec" 2★ and 3★)
+          const nameSlug = slugify(badge.name)
+          const shortId = badge.id.split('-')[0] // e.g., "3e7e8570" from "3e7e8570-f7d3-..."
+          const slug = `${nameSlug}-${shortId}`
+
+          return {
+            id: badge.id,
+            name: badge.name,
+            slug,
+            stars: badge.stars as 1 | 2 | 3,
+            requirements: badge.requirements,
+            basedOn: badge.basedOn,
+            iconUrl: group.spec.badgeIcons[badge.id]
+              ? `${ICON_BASE}${group.spec.badgeIcons[badge.id]}`
+              : null,
+          }
+        })
 
         return {
-          id: badge.id,
-          name: badge.name,
-          slug,
-          stars: badge.stars as 1 | 2 | 3,
-          requirements: badge.requirements,
-          basedOn: badge.basedOn,
-          iconUrl: group.spec.badgeIcons[badge.id]
-            ? `${ICON_BASE}${group.spec.badgeIcons[badge.id]}`
-            : null,
-        }
+          id: group.id,
+          ordinal: group.ordinal,
+          category: group.category as 1 | 2 | 3 | 4 | 5 | 6,
+          slug: slugify(group.spec.name),
+          spec: {
+            name: group.spec.name,
+            comment: group.spec.comment,
+            keywords: group.spec.keywords,
+            badges,
+          },
+        } satisfies BadgeGroup
       })
 
-      return {
-        id: group.id,
-        ordinal: group.ordinal,
-        category: group.category as 1 | 2 | 3 | 4 | 5 | 6,
-        slug: slugify(group.spec.name),
-        spec: {
-          name: group.spec.name,
-          comment: group.spec.comment,
-          keywords: group.spec.keywords,
-          badges,
-        },
-      } satisfies BadgeGroup
-    })
-
-  return _cache
+    return _cache
+  } catch (error) {
+    // Re-throw with more context
+    const message = error instanceof Error ? error.message : 'Unknown error occurred'
+    throw new Error(`Failed to fetch badge groups: ${message}`)
+  }
 }
 
 export async function getGroupBySlug(slug: string): Promise<BadgeGroup | undefined> {

@@ -26,6 +26,9 @@ describe('fetchBadgeGroups – sort order', () => {
               { id: 'a', ordinal: 10, category: 1, spec: { name: 'A', comment: '', keywords: [], badges: [], badgeIcons: {} } },
               { id: 'b', ordinal: 20, category: 1, spec: { name: 'B', comment: '', keywords: [], badges: [], badgeIcons: {} } },
             ],
+            categories: [
+              { id: 1, name: 'Test Category', ordinal: 1 },
+            ],
           }),
       })
     )
