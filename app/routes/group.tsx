@@ -76,8 +76,8 @@ export default function GroupPage({ loaderData }: Route.ComponentProps) {
 
               {spec.keywords && spec.keywords.length > 0 && (
                 <div className="flex flex-wrap gap-1.5 mt-auto">
-                  {spec.keywords.map((kw: string) => (
-                    <Badge key={kw} variant="secondary" className="text-[10px] px-1.5 py-0 font-medium bg-muted/60 text-muted-foreground hover:bg-muted/80">
+                  {spec.keywords.map((kw: string, idx: number) => (
+                    <Badge key={`${kw}-${idx}`} variant="secondary" className="text-[10px] px-1.5 py-0 font-medium bg-muted/60 text-muted-foreground hover:bg-muted/80">
                       #{kw}
                     </Badge>
                   ))}

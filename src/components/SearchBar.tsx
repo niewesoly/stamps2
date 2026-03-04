@@ -122,9 +122,13 @@ export default function SearchBar({ groups }: Props) {
         >
           {results.map((r, i) => {
             const isSelected = selectedIndex === i
+            // Create stable key from type + slug (badgeSlug for badges, groupSlug for groups)
+            const key = r.type === 'badge'
+              ? `badge-${r.badgeSlug}`
+              : `group-${r.groupSlug}`
             return (
               <a
-                key={i}
+                key={key}
                 id={`search-result-${i}`}
                 role="option"
                 aria-selected={isSelected}

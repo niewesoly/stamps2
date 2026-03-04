@@ -123,8 +123,8 @@ function GroupCard({ group }: { group: BadgeGroup }) {
           <CardContent className="p-4 pt-0 pb-4 relative flex flex-col gap-2.5 flex-1">
             {group.spec.keywords?.length ? (
               <div className="flex flex-wrap gap-1">
-                {group.spec.keywords.map((kw: string) => (
-                  <Badge key={kw} variant="secondary" className="text-[9px] px-1 py-0 h-4 min-h-0 font-medium bg-muted/60 text-muted-foreground hover:bg-muted/80">
+                {group.spec.keywords.map((kw: string, idx: number) => (
+                  <Badge key={`${kw}-${idx}`} variant="secondary" className="text-[9px] px-1 py-0 h-4 min-h-0 font-medium bg-muted/60 text-muted-foreground hover:bg-muted/80">
                     #{kw}
                   </Badge>
                 ))}

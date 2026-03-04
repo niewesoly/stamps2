@@ -157,7 +157,7 @@ export default function BadgePage({ loaderData }: Route.ComponentProps) {
         <ol className="space-y-3">
           {badge.requirements.map((req: string, i: number) => (
             <li
-              key={i}
+              key={`req-${i}-${req.slice(0, 15)}`}
               className="flex items-start gap-4 p-4 rounded-xl bg-card border shadow-sm transition-colors hover:border-primary/30"
             >
               <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary font-bold text-xs mt-0.5">

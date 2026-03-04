@@ -55,7 +55,7 @@ export default function BadgeCard({ badge, group }: Props) {
             {badge.requirements.length > 0 && (
               <ul className="text-sm text-foreground/90 leading-relaxed space-y-2 list-none">
                 {badge.requirements.map((req, idx) => (
-                  <li key={idx} className="flex gap-2.5">
+                  <li key={`${idx}-${req.slice(0, 20)}`} className="flex gap-2.5">
                     <span className="text-primary/70 shrink-0 select-none mt-0.5">•</span>
                     <span>{req}</span>
                   </li>
