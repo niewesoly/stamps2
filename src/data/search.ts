@@ -64,7 +64,9 @@ export function buildSearchIndex(groups: BadgeGroup[]): Fuse<SearchDocument> {
       { name: 'groupName', weight: 1.0 },
       { name: 'requirements', weight: 0.5 },
     ],
-    threshold: 0.35,
+    // Higher threshold (0.6) allows matches in long keyword lists
+    // Lower values (e.g. 0.35) would filter out badges with many keywords
+    threshold: 0.6,
     minMatchCharLength: 2,
     includeScore: true,
   })
