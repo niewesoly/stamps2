@@ -9,7 +9,7 @@ export interface SearchResult {
   badgeName?: string
   stars?: 1 | 2 | 3
   iconUrl?: string | null
-  category: 1 | 2 | 3 | 4 | 6
+  category: 1 | 2 | 3 | 4 | 5 | 6
 }
 
 export interface SearchDocument {

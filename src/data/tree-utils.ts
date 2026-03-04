@@ -1,5 +1,5 @@
 import { type BadgeSpec } from '@/data/types'
-import { type TreeNode } from './types'
+import { type TreeNode } from '@/components/BadgeTree/types'
 
 /**
  * Build a tree structure from flat badge list based on basedOn relationships.
